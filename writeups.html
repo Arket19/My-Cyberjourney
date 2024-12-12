@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Writeups - My Cyberjourney</title>
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="writeups.css">
+    <link href="https://fonts.googleapis.com/css2?family=Alumni+Sans+Pinstripe:ital@0;1&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Serif:ital,opsz,wght@0,8..144,100..900;1,8..144,100..900&display=swap" rel="stylesheet">
+    
+</head>
+<body>
+
+    <!-- Menú -->
+    <nav class="w3-bar">
+        <div class=" logo">
+            <p>My Cyberjourney</p>
+        </div>
+        <div class="w3-bar-item w3-right w3-hide-large w3-hover-opacity" onclick="w3_open()">
+            <i class="fa fa-bars w3-xlarge"></i>
+        </div>
+        <div class="w3-hide-small ">
+            <ul class="elementos-menu">
+                <li class="w3-bar-item"><a href="index.html">Home</a></li>
+                <li class="w3-bar-item"><a href="curriculum/curriculum.html">Resume (CV)</a></li>
+                <li class="w3-bar-item"><a href="writeups/writeups.html">Writeups</a></li>
+                <li class="w3-bar-item"><a href="learning/learning.html">Learning Journey</a></li>
+            </ul>
+        </div>
+    </nav> 
+
+
+
+    <!-- Título -->
+    <div class="w3-container title">
+        <h2>Writeups</h2>
+    </div>
+
+
+
+    <!-- Barra de etiquetas -->
+    <div class="w3-container barra_de_etiquetas">
+        <div>
+            <button class="w3-bar-item w3-button" onclick="filterWriteups('all')">All</button>
+            <button class="w3-bar-item w3-button" onclick="filterWriteups('Privesc')">Privesc</button>
+            <button class="w3-bar-item w3-button" onclick="filterWriteups('Recon')">Recon</button>
+            <button class="w3-bar-item w3-button" onclick="filterWriteups('Access')">Access</button>
+            <button class="w3-bar-item w3-button" onclick="filterWriteups('all')">PortSwigger</button>
+            <button class="w3-bar-item w3-button" onclick="filterWriteups('Privesc')">SSTI (Server Side Tula Imaginaria)</button>
+            <button class="w3-bar-item w3-button" onclick="filterWriteups('Recon')">SQLi (SQL injection)</button>
+            <button class="w3-bar-item w3-button" onclick="filterWriteups('Access')">Buffer Overflow</button>
+            <button class="w3-bar-item w3-button" onclick="filterWriteups('all')">HTB</button>
+            <button class="w3-bar-item w3-button" onclick="filterWriteups('Privesc')">Privesc</button>
+            <button class="w3-bar-item w3-button" onclick="filterWriteups('Recon')">Recon</button>
+            <button class="w3-bar-item w3-button" onclick="filterWriteups('Access')">Access</button>
+            <button class="w3-bar-item w3-button" onclick="filterWriteups('all')">All</button>
+            <button class="w3-bar-item w3-button" onclick="filterWriteups('Privesc')">Privesc</button>
+            <button class="w3-bar-item w3-button" onclick="filterWriteups('Recon')">Recon</button>
+            <button class="w3-bar-item w3-button" onclick="filterWriteups('Access')">Access</button>
+            <button class="w3-bar-item w3-button" onclick="filterWriteups('all')">All</button>
+            <button class="w3-bar-item w3-button" onclick="filterWriteups('Privesc')">Privesc</button>
+            <button class="w3-bar-item w3-button" onclick="filterWriteups('Recon')">Recon</button>
+            <button class="w3-bar-item w3-button" onclick="filterWriteups('Access')">Access</button>
+            <button class="w3-bar-item w3-button" onclick="filterWriteups('all')">All</button>
+            <button class="w3-bar-item w3-button" onclick="filterWriteups('Privesc')">Privesc</button>
+            <button class="w3-bar-item w3-button" onclick="filterWriteups('Recon')">Recon</button>
+            <button class="w3-bar-item w3-button" onclick="filterWriteups('Access')">Access</button>
+            <button class="w3-bar-item w3-button" onclick="filterWriteups('all')">All</button>
+            <button class="w3-bar-item w3-button" onclick="filterWriteups('Privesc')">Privesc</button>
+            <button class="w3-bar-item w3-button" onclick="filterWriteups('Recon')">Recon</button>
+            <button class="w3-bar-item w3-button" onclick="filterWriteups('Access')">Access</button>
+            <button class="w3-bar-item w3-button" onclick="filterWriteups('all')">All</button>
+            <button class="w3-bar-item w3-button" onclick="filterWriteups('Privesc')">Privesc</button>
+            <button class="w3-bar-item w3-button" onclick="filterWriteups('Recon')">Recon</button>
+            <button class="w3-bar-item w3-button" onclick="filterWriteups('Access')">Access</button>
+            <button class="w3-bar-item w3-button" onclick="filterWriteups('Access')">Access</button>
+            <button class="w3-bar-item w3-button" onclick="filterWriteups('Access')">Access</button>
+            <button class="w3-bar-item w3-button" onclick="filterWriteups('Access')">Access</button>
+            <button class="w3-bar-item w3-button" onclick="filterWriteups('Access')">Access</button>
+            <button class="w3-bar-item w3-button" onclick="filterWriteups('Access')">Access</button>
+        </div>
+    </div>
+
+
+
+    <!-- Writeups -->
+    <div class="lista_de_writeups">
+        <a class="w3-card writeup-item" href="writeups/HackTheBox/index.html">
+            <h4>CTF: HackTheBox</h4>
+            <p><span class="w3-tag w3-green">Recon</span>
+                <span class="w3-tag w3-green">Privesc</span>
+                <span class="w3-tag w3-green">STTI</span>
+                <span class="w3-tag w3-green">SQLi</span>
+                <span class="w3-tag w3-green">HTB</span>
+                <span class="w3-tag w3-green">Easy</span>
+                <span class="w3-tag w3-green">Recon</span>
+                <span class="w3-tag w3-green">Recon</span>
+                <span class="w3-tag w3-green">AAAA</span>
+            </p>
+            <p class="fecha">10/10/2024
+            </p>
+        </a>
+        <a class="w3-card writeup-item" href="writeups/HackTheBox/index.html">
+            <h4>CTF: HackTheBox</h4>
+            <p><span class="w3-tag w3-green">Recon</span>
+                <span class="w3-tag w3-green">Privesc</span>
+                <span class="w3-tag w3-green">STTI</span>
+                <span class="w3-tag w3-green">SQLi</span>
+                <span class="w3-tag w3-green">HTB</span>
+                <span class="w3-tag w3-green">Easy</span>
+                <span class="w3-tag w3-green">Recon</span>
+                <span class="w3-tag w3-green">Recon</span>
+                <span class="w3-tag w3-green">AAAA</span>
+            </p>
+            <p class="fecha">10/10/2024
+            </p>
+        </a>
+        <a class="w3-card writeup-item" href="writeups/HackTheBox/index.html">
+            <h4>CTF: HackTheBox</h4>
+            <p><span class="w3-tag w3-green">Recon</span>
+                <span class="w3-tag w3-green">Privesc</span>
+                <span class="w3-tag w3-green">STTI</span>
+                <span class="w3-tag w3-green">SQLi</span>
+                <span class="w3-tag w3-green">HTB</span>
+                <span class="w3-tag w3-green">Easy</span>
+                <span class="w3-tag w3-green">Recon</span>
+                <span class="w3-tag w3-green">Recon</span>
+                <span class="w3-tag w3-green">AAAA</span>
+            </p>
+            <p class="fecha">10/10/2024
+            </p>
+        </a>
+        <a class="w3-card writeup-item" href="writeups/HackTheBox/index.html">
+            <h4>CTF: HackTheBox</h4>
+            <p><span class="w3-tag w3-green">Recon</span>
+                <span class="w3-tag w3-green">Privesc</span>
+                <span class="w3-tag w3-green">STTI</span>
+                <span class="w3-tag w3-green">SQLi</span>
+                <span class="w3-tag w3-green">HTB</span>
+                <span class="w3-tag w3-green">Easy</span>
+                <span class="w3-tag w3-green">Recon</span>
+                <span class="w3-tag w3-green">Recon</span>
+                <span class="w3-tag w3-green">AAAA</span>
+            </p>
+            <p class="fecha">10/10/2024
+            </p>
+        </a>
+        <a class="w3-card writeup-item" href="writeups/HackTheBox/index.html">
+            <h4>CTF: HackTheBox</h4>
+            <p><span class="w3-tag w3-green">Recon</span>
+                <span class="w3-tag w3-green">Privesc</span>
+                <span class="w3-tag w3-green">STTI</span>
+                <span class="w3-tag w3-green">SQLi</span>
+                <span class="w3-tag w3-green">HTB</span>
+                <span class="w3-tag w3-green">Easy</span>
+                <span class="w3-tag w3-green">Recon</span>
+                <span class="w3-tag w3-green">Recon</span>
+                <span class="w3-tag w3-green">AAAA</span>
+            </p>
+            <p class="fecha">10/10/2024
+            </p>
+        </a>
+        <a class="w3-card writeup-item" href="writeups/HackTheBox/index.html">
+            <h4>CTF: HackTheBox</h4>
+            <p><span class="w3-tag w3-green">Recon</span>
+                <span class="w3-tag w3-green">Privesc</span>
+                <span class="w3-tag w3-green">STTI</span>
+                <span class="w3-tag w3-green">SQLi</span>
+                <span class="w3-tag w3-green">HTB</span>
+                <span class="w3-tag w3-green">Easy</span>
+                <span class="w3-tag w3-green">Recon</span>
+                <span class="w3-tag w3-green">Recon</span>
+                <span class="w3-tag w3-green">AAAA</span>
+            </p>
+            <p class="fecha">10/10/2024
+            </p>
+        </a>
+        <a class="w3-card writeup-item" href="writeups/HackTheBox/index.html">
+            <h4>CTF: HackTheBox</h4>
+            <p><span class="w3-tag w3-green">Recon</span>
+                <span class="w3-tag w3-green">Privesc</span>
+                <span class="w3-tag w3-green">STTI</span>
+                <span class="w3-tag w3-green">SQLi</span>
+                <span class="w3-tag w3-green">HTB</span>
+                <span class="w3-tag w3-green">Easy</span>
+                <span class="w3-tag w3-green">Recon</span>
+                <span class="w3-tag w3-green">Recon</span>
+                <span class="w3-tag w3-green">AAAA</span>
+            </p>
+            <p class="fecha">10/10/2024
+            </p>
+        </a>
+        <a class="w3-card writeup-item" href="writeups/HackTheBox/index.html">
+            <h4>CTF: HackTheBox</h4>
+            <p><span class="w3-tag w3-green">Recon</span>
+                <span class="w3-tag w3-green">Privesc</span>
+                <span class="w3-tag w3-green">STTI</span>
+                <span class="w3-tag w3-green">SQLi</span>
+                <span class="w3-tag w3-green">HTB</span>
+                <span class="w3-tag w3-green">Easy</span>
+                <span class="w3-tag w3-green">Recon</span>
+                <span class="w3-tag w3-green">Recon</span>
+                <span class="w3-tag w3-green">AAAA</span>
+            </p>
+            <p class="fecha">10/10/2024
+            </p>
+        </a>
+        <a class="w3-card writeup-item" href="writeups/HackTheBox/index.html">
+            <h4>CTF: HackTheBox</h4>
+            <p><span class="w3-tag w3-green">Recon</span>
+                <span class="w3-tag w3-green">Privesc</span>
+                <span class="w3-tag w3-green">STTI</span>
+                <span class="w3-tag w3-green">SQLi</span>
+                <span class="w3-tag w3-green">HTB</span>
+                <span class="w3-tag w3-green">Easy</span>
+                <span class="w3-tag w3-green">Recon</span>
+                <span class="w3-tag w3-green">Recon</span>
+                <span class="w3-tag w3-green">AAAA</span>
+            </p>
+            <p class="fecha">10/10/2024
+            </p>
+        </a>
+
+    </div>
+
+    <!-- Script para filtro -->
+    <script>
+        function filterWriteups(tag) {
+            const writeups = document.querySelectorAll('.writeup-item');
+            writeups.forEach(writeup => {
+                if (tag === 'all' || writeup.classList.contains(tag)) {
+                    writeup.style.display = 'block';
+                } else {
+                    writeup.style.display = 'none';
+                }
+            });
+        }
+    </script>
+
+</body>
+</html>
