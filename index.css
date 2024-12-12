@@ -1,0 +1,166 @@
+/* Fonts */
+.alumni-sans-pinstripe-regular {
+    font-family: "Alumni Sans Pinstripe", sans-serif;
+    font-style: normal;
+}
+.alumni-sans-pinstripe-regular-italic {
+    font-family: "Alumni Sans Pinstripe", sans-serif;
+    font-style: italic;
+  }
+.roboto-serif{
+    font-family: "Roboto Serif", serif;
+    font-optical-sizing: auto;
+    font-weight: 400;
+    font-style: normal;
+    font-variation-settings:
+      "wdth" 100,
+      "GRAD" 0;
+  }
+  
+
+
+
+/* General */
+body {
+    font-family: 'Roboto Serif', serif;
+    background-color: #222222; /* Fondo negro */
+    color: white; /* Texto claro */
+    margin: 0;
+    padding: 0;
+}
+
+
+
+/* Barra de navegación */
+nav {
+    background-color: #333; /* Color de fondo del menú */
+    color: white;
+    padding: 5px 10px; /* Menor altura */
+    display: flex;
+    justify-content: space-between;
+    align-items: center; /* Centrar verticalmente */
+    height: 5rem;
+    position: fixed; 
+    top: 0; 
+    left: 0; 
+    width: 100%;
+    z-index: 1000; 
+}
+
+nav .logo a {
+    font-family: 'Alumni Sans Pinstripe', sans-serif;
+    font-size: 1.8rem;
+    font-weight: bold;
+    text-decoration: none;
+    color: white;
+}
+
+nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-wrap: wrap;
+}
+
+nav ul li {
+    margin: 0 10px;
+}
+
+nav ul li a {
+    text-decoration: none;
+    color: white;
+    transition: color 0.3s;
+}
+
+
+
+
+
+
+
+
+
+
+
+/* Presentación */
+.presentation {
+    margin-top: 8rem;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+    width: 60%; /* Ocupa dos tercios */
+    color: white;
+}
+
+.presentation h2 {
+    font-family: 'Alumni Sans Pinstripe', sans-serif;
+    font-size: 2.5rem;
+    border-bottom: 2px solid #00bcd4;
+    display: inline-block;
+    padding: 5px 10px;
+    margin: 0 auto; /* Centrarlo */
+}
+
+.presentation p {
+    margin-top: 20px;
+    line-height: 1.8;
+    text-align: justify;
+}
+
+
+
+
+
+
+
+/* Milestones y Next Steps */
+.second-half {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    padding-top: 10rem;
+    gap: 20px;
+}
+
+.column {
+    width: 100rem;
+    background-color: rgb(224, 224, 224); /* Fondo blanco */
+    color: black; /* Texto negro */
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    max-width: 300px;
+
+}
+
+.titulos-milestones {
+    font-family: 'Alumni Sans Pinstripe', sans-serif;
+    font-size: 2rem;
+    margin-bottom: 10px;
+    height: 3rem;
+    font-weight: bolder;
+}
+
+/* Responsividad */
+@media screen and (max-width: 768px) {
+    nav ul {
+        flex-direction: column;
+    }
+
+    .second-half {
+        flex-direction: column;
+    }
+
+    .column {
+        max-width: 100%;
+    }
+
+    .presentation h2 {
+        font-size: 2rem;
+    }
+
+    nav .logo a {
+        font-size: 1.6rem;
+    }
+}
