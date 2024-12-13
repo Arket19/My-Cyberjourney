@@ -1,10 +1,4 @@
-- intentar hacer un indice dinamico para los writeups
-- hacer que el titulo de los writeups sea blanco, mas grande, con la letra bonita y el subrayado azul
-- hacer que al cambiar de pagina las letras del menu no cambien de posicion
-- meter etiquetas en una linea despues del titulo del writeup y que python las borre y las meta en el json
-- arreglar filtros
-
-        /* General */
+/* General */
 body {
     font-family: 'Roboto Serif', serif;
     background-color: #222222; /* Fondo negro */
@@ -68,7 +62,6 @@ nav ul li a {
     font-family: 'Alumni Sans Pinstripe', sans-serif;
     font-size: 2.5rem;
     border-bottom: 2px solid #00bcd4;
-
 }
 h1 {
     padding-top: 4rem;
@@ -123,5 +116,4 @@ img {
 p {
     margin-bottom: 15px;
 }
-        
         

