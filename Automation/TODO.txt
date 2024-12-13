@@ -1,3 +1,6 @@
 - intentar hacer un indice dinamico para los writeups
 - hacer que el titulo de los writeups sea blanco, mas grande, con la letra bonita y el subrayado azul
 - hacer que al cambiar de pagina las letras del menu no cambien de posicion
+- meter etiquetas en una linea despues del titulo del writeup y que python las borre y las meta en el json
+- automatizar fecha y titulo y ruta tambien
+- arreglar filtros
