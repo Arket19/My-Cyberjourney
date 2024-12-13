@@ -1,0 +1,3 @@
+- intentar hacer un indice dinamico para los writeups
+- hacer que el titulo de los writeups sea blanco y mas grande
+- hacer que al cambiar de pagina las letras del menu no cambien de posicion

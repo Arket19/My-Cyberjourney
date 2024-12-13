@@ -33,12 +33,12 @@ body {
 
 /* Barra de navegación */
 nav {
-    background-color: #333; /* Color de fondo del menú */
+    background-color: #333; 
     color: white;
-    padding: 5px 10px; /* Menor altura */
+    padding: 5px 10px; 
     display: flex;
     justify-content: space-between;
-    align-items: center; /* Centrar verticalmente */
+    align-items: center;
     height: 5rem;
     position: fixed; 
     top: 0; 
@@ -48,7 +48,7 @@ nav {
 }
 
 nav .logo a {
-    font-family: 'Alumni Sans Pinstripe', sans-serif;
+    font-family: 'Roboto', sans-serif;
     font-size: 1.8rem;
     font-weight: bold;
     text-decoration: none;
@@ -72,14 +72,6 @@ nav ul li a {
     color: white;
     transition: color 0.3s;
 }
-
-
-
-
-
-
-
-
 
 
 
