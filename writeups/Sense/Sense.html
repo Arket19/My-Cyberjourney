@@ -1,0 +1,71 @@
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Sense - My Cyberjourney</title>
+        <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="Sense.css" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Alumni+Sans+Pinstripe:ital@0;1&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Roboto+Serif:ital,opsz,wght@0,8..144,100..900;1,8..144,100..900&display=swap" rel="stylesheet">
+    </head>
+    <body>
+        <!-- Menú -->
+        <nav class="w3-bar">
+            <div class="logo">
+                <p>My Cyberjourney</p>
+            </div>
+            <div class="w3-bar-item w3-right w3-hide-large w3-hover-opacity" onclick="w3_open()">
+                <i class="fa fa-bars w3-xlarge"></i>
+            </div>
+            <div class="w3-hide-small">
+                <ul class="elementos-menu">
+                    <li class="w3-bar-item"><a href="index.html">Home</a></li>
+                    <li class="w3-bar-item"><a href="curriculum/curriculum.html">Resume (CV)</a></li>
+                    <li class="w3-bar-item"><a href="writeups/writeups.html">Writeups</a></li>
+                    <li class="w3-bar-item"><a href="learning/learning.html">Learning Journey</a></li>
+                </ul>
+            </div>
+        </nav> 
+        <div class="content">
+            <h1 class="title">EASY-SENSE</h1>
+<h1>1. Recon</h1>
+<h2>Nmap</h2>
+<p>I started pinging the target to check if it was a Linux or a Windows system. The Time-To-Live (ttl) was 63, which is very close to 64, so it was a Linux system. Had it been close to 128 (or 128) it would have been a Windows system. After that I conducted an Nmap scan to detect active services on the target using <code>-p-</code> to scan all ports. Given that it was a Hack The Box machine (a controlled environment), I optimized the scan for speed using the following flags: <code>--min-rate 5000</code>, <code>-sS</code> for a SYN scan, <code>-Pn</code> to skip the host discovery stage, <code>-n</code> to skip reverse DNS resolution and <code>-T5</code> for higher speed.</p>
+<p><img alt="image.png" src="image.png" /></p>
+<p><img alt="image.png" src="image%201.png" /></p>
+<p>The scan revealed the following open ports:</p>
+<ul>
+<li><strong>HTTP</strong> on port 80</li>
+<li><strong>HTTPS</strong> on port 443</li>
+</ul>
+<p>Then, I conducted a more thorough scan to those two ports using service version detection (<code>-sV</code>) and the Nmap Scripting Engine (NSE) with default scripts (<code>-sC</code>). I also saved the output for easy reference later (<code>-oN nmap</code>).</p>
+<p><img alt="image.png" src="image%202.png" /></p>
+<h2>Website - TCP 80</h2>
+<p>After the scan I ran <code>whatweb</code> to check which technologies did the HTTPS service use and tried visiting the webpage to look for web vulnerabilities. The site presented a <code>pfSense</code> login panel. </p>
+<p><img alt="image.png" src="image%203.png" /></p>
+<p><img alt="image.png" src="image%204.png" /></p>
+<p>After some unsuccessful SQL injection attempts and trying default usernames and passwords, I ran <code>gobuster</code> to brute force directory paths. This yielded several results, but most required authentication to access. However, I did manage to access two files: <code>/changelog.txt</code> and <code>/system-users.txt</code>.</p>
+<p><img alt="image.png" src="image%205.png" /></p>
+<p><img alt="image.png" src="image%206.png" /></p>
+<h1>2. Gaining access</h1>
+<p><code>/changelog.txt</code> contained some credentials which allowed me to log into the <code>pfSense</code> Dashboard. The dashboard indicated that the system was running version 2.1.3. Using <code>searchsploit</code>, I identified a known command injection vulnerability for this version of pfSense.</p>
+<p><img alt="image.png" src="image%207.png" /></p>
+<p><img alt="image.png" src="image%208.png" /></p>
+<p>Upon reviewing the exploit script, I discovered that the vulnerability could be triggered via GET requests to <code>/status_rrd_graph_img.php?database=queues;</code>, allowing for arbitrary command injection. </p>
+<p><img alt="image.png" src="image%209.png" /></p>
+<p>Knowing that, I tried injecting commands and I found that I couldn´t use some characters like <code>/</code> . However, I managed to use it printing the environment variable <code>$HOME</code> </p>
+<p><img alt="image.png" src="image%2010.png" /></p>
+<p><img alt="image.png" src="image%2011.png" /></p>
+<p>To gain more control over the target, I wrote a <code>Python</code> script to establish a reverse shell. I launched a <code>netcat</code> listener on port 6666, then served the <code>Python</code> script via the listener. By sending a <code>netcat</code> connection to my listener using <code>|python</code>, the server executed the script, providing me with a reverse shell.</p>
+<p><img alt="image.png" src="image%2012.png" /></p>
+<p><img alt="image.png" src="image%2013.png" /></p>
+<p><img alt="image.png" src="image%2014.png" /></p>
+<p>Once connected, I achieved <code>root</code> access on the system and successfully retrieved both flags.</p>
+<p><img alt="image.png" src="image%2015.png" /></p>
+        </div>
+    </body>
+</html>

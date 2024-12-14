@@ -1,0 +1,100 @@
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Tabby - My Cyberjourney</title>
+        <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="Tabby.css" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Alumni+Sans+Pinstripe:ital@0;1&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Roboto+Serif:ital,opsz,wght@0,8..144,100..900;1,8..144,100..900&display=swap" rel="stylesheet">
+    </head>
+    <body>
+        <!-- Menú -->
+        <nav class="w3-bar">
+            <div class="logo">
+                <p>My Cyberjourney</p>
+            </div>
+            <div class="w3-bar-item w3-right w3-hide-large w3-hover-opacity" onclick="w3_open()">
+                <i class="fa fa-bars w3-xlarge"></i>
+            </div>
+            <div class="w3-hide-small">
+                <ul class="elementos-menu">
+                    <li class="w3-bar-item"><a href="index.html">Home</a></li>
+                    <li class="w3-bar-item"><a href="curriculum/curriculum.html">Resume (CV)</a></li>
+                    <li class="w3-bar-item"><a href="writeups/writeups.html">Writeups</a></li>
+                    <li class="w3-bar-item"><a href="learning/learning.html">Learning Journey</a></li>
+                </ul>
+            </div>
+        </nav> 
+        <div class="content">
+            <h1 class="title">EASY-TABBY</h1>
+<h1><strong>1. Recon</strong></h1>
+<h2>Nmap</h2>
+<p><code>nmap</code> finds three open ports: SSH (22), HTTP (80 &amp; 8080). </p>
+<p><img alt="imagen.png" src="imagen.png" /></p>
+<p>The NSE (Nmap Scripting Engine) finds the following information:</p>
+<ul>
+<li>The box is using Ubuntu</li>
+<li>The version of the SSH service is 8.2p1</li>
+<li>The port 80 HTTP server is using Apache 2.4.41 and the title suggests it is a hosting website.</li>
+<li>The port 8080 HTTP is using Apache Tomcat</li>
+</ul>
+<p><img alt="imagen.png" src="imagen%201.png" /></p>
+<hr />
+<h2>HTTP - TCP 80</h2>
+<p>Visiting <code>http://10.10.10.194</code> shows a hosting website. There is a domain (<code>megahosting.htb</code>) which I will add to <code>/etc/hosts</code>.  After trying a <code>DNS zone transfer</code> and <code>fuzzing subdomains</code> I haven’t found any, so I will go on <code>fuzzing directories</code> in <code>http://10.10.10.194/</code> and <code>http://megahosting.htb</code>. </p>
+<p><img alt="imagen.png" src="imagen%202.png" /></p>
+<p><code>Gobuster</code> throws the same results for both URL’s. None of the files seem interesting (by now) since all of them either appear not to be vulnerable (<code>logo.php,</code> <code>index.php</code> and <code>Readme.php</code>) or doesn’t show anything (<code>news.php</code>).</p>
+<p><img alt="imagen.png" src="imagen%203.png" /></p>
+<p>I will use <code>feroxbuster</code> to fuzz both <code>/assets</code> and <code>/files</code> as it is faster than gobuster and can do a recursive fuzzing exploring also any directories that are found. It finds /files/statement which is a page with a bunch of links and apology for a data breach. None of those links work except for <code>News</code>, that redirects to <code>http://megahosting.htb/news.php?file=statement</code>. This new URL shows that <code>news.php</code> needed a parameter to work correctly. This parameter, if not correctly sanitized, could lead to a LFI.</p>
+<p><img alt="imagen.png" src="imagen%204.png" /></p>
+<p><img alt="imagen.png" src="imagen%205.png" /></p>
+<p>Trying to perform an LFI was succesful and didn’t require any further testing than using <code>../../../../../../</code> to access the system root directory. As there is no sanitization, files like <code>/etc/passwd</code> can be accessed. The user <code>ash</code> is shown in that file.</p>
+<p><img alt="imagen.png" src="imagen%206.png" /></p>
+<hr />
+<h2>Apache Tomcat - 8080</h2>
+<p>Both <code>http://megahosting.htb:8080/</code> and <code>http://10.10.10.194:8080/</code> redirect to the same page. This site is the fault Tomcat page for this port. Some useful information is found here:</p>
+<ul>
+<li><code>CATALINA_HOME = /usr/share/tomcat9/</code></li>
+<li><code>CATALINA_BASE = /var/lib/tomcat9/</code></li>
+<li>The manager_webapp is restricted to users with role <code>admin-gui</code></li>
+<li>Clicking the documentation link the version of Tomcat can be seen. <strong><code>Apache Tomcat 9.0.31</code>.</strong></li>
+</ul>
+<p><img alt="imagen.png" src="imagen%207.png" /></p>
+<p>After some trying to access <code>tomcat-users.xml</code> through the LFI which was discovered before to see which users have the <code>admin-gui</code> role I haven’t been able to find anything. To find alternative routes this file could be in I am going to install <code>tomcat9</code> in a <code>docker</code> container and use <code>locate</code> to find them. </p>
+<p><img alt="imagen.png" src="imagen%208.png" /></p>
+<p>After installing it I have found another route: <code>/usr/share/tomcat9/etc/tomcat-users.xml</code>. The LFI successfully shows the content of this file where the user <code>tomcat</code> is found next to the password <code>$3cureP4s5w0rd123!</code>.</p>
+<p><img alt="imagen.png" src="imagen%209.png" /></p>
+<p><img alt="imagen.png" src="imagen%2010.png" /></p>
+<p>As this user doesn’t have the <code>manager-gui</code> role, the <code>manager webapp</code> can’t be accessed, but the <code>host-manager webapp</code> accepts those credentials and the following website is shown.</p>
+<p><img alt="imagen.png" src="imagen%2011.png" /></p>
+<h1><strong>2. Gaining Access</strong></h1>
+<p>As I have never exploited a tomcat before I have looked for existing vulnerabilities and exploits for this host-manager service. After some time I have come across this  <a href="https://book.hacktricks.xyz/network-services-pentesting/pentesting-web/tomcat#limitations">HackTricks post</a> which not only explains how to get Remote Code Execution but also has the full path to <code>tomcat-users.xml</code> that I have discovered using <code>docker</code>. Something like <code>curl --upload-file monshell.war -u 'tomcat:password' "http://localhost:8080/manager/text/deploy?path=/monshell"</code> can be used to upload a <code>.war</code> file which will deploy an application. I will use that to upload an application which sends a reverse shell to me. To make that file I will be using <code>msfvenom</code>.</p>
+<p><img alt="imagen.png" src="imagen%2012.png" /></p>
+<p><img alt="imagen.png" src="imagen%2013.png" /></p>
+<p>Visiting <code>http://megahosting.htb:8080/reverse/</code> makes the application run and successfully sends the reverse shell to my Kali. </p>
+<p><img alt="imagen.png" src="imagen%2014.png" /></p>
+<h1><strong>3. Privilege Escalation</strong></h1>
+<h2>Ash</h2>
+<p>After some time looking for passwords and files that I could exploit to get access to the system as the user <code>ash</code> I have found a compressed backup file which seems interesting. I will move it to my Kali and decompress it.</p>
+<p><img alt="imagen.png" src="imagen%2015.png" /></p>
+<p>While trying to <code>unzip</code> it a password is required for some files. Using <code>zip2john</code> a hash for that password can be retrieved so it is posible using <code>john</code> to try cracking it with a brute force attack. After doing it the password <code>admin@it</code> is found.</p>
+<p><img alt="imagen.png" src="imagen%2016.png" /></p>
+<p><img alt="imagen.png" src="imagen%2017.png" /></p>
+<p><img alt="imagen.png" src="imagen%2018.png" /></p>
+<p>After inspecting the contents of the zip file I haven’t found anything interesting so I will try to use that same <code>password</code> to log in as <code>ash</code>. It works so now I can read the user flag.</p>
+<p><img alt="imagen.png" src="imagen%2019.png" /></p>
+<h2>Root</h2>
+<p>Now the last step remains. I have to achieve root permissions in the system. The first thing I always do after logging in as a new user is checking which groups that user belongs to so I have noticed this user is in the <code>lxd</code> group. This group gives you permissions to use <code>lxd</code> and <code>lxc</code> which are tools to create containers within an operating system. Using <code>lxc</code>, a copy of the system can be created and placed inside a container. This allows access to any file from the original system, which can be read as root from within the container. There is an exploit in <code>searschsploit</code> which automates this process.</p>
+<p><img alt="imagen.png" src="imagen%2020.png" /></p>
+<p>This exploit and an Alpine (or any other distribution) image have to be moved to the target. After that the script can be run.</p>
+<p>The first try to run the script has failed because <code>lxc</code> is not in the PATH but after modifying it I have successfully ran the script and the container has been created so now I can read <code>root.txt</code> and submit the flag. Note: doing <code>cat /root/root.txt</code> does not work because that root folder is the container root folder, not the copied root folder of the target. The flag is located in <code>/mnt/root/root/root.txt</code>. </p>
+<p><img alt="imagen.png" src="imagen%2021.png" /></p>
+<p><img alt="imagen.png" src="imagen%2022.png" /></p>
+        </div>
+    </body>
+</html>

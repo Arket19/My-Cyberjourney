@@ -1,4 +1,117 @@
 [
-
-
+    {
+        "title": "HTB: Doctor",
+        "url": "writeups/Doctor/Doctor.html",
+        "tags": [
+            "Splunk",
+            "SSTI",
+            "Logs"
+        ],
+        "date": "08/12/2024"
+    },
+    {
+        "title": "HTB: Tabby",
+        "url": "writeups/Tabby/Tabby.html",
+        "tags": [
+            "LFI",
+            "Tomcat",
+            "File Upload",
+            "Lxc/Lxd",
+            "Docker"
+        ],
+        "date": "04/12/2024"
+    },
+    {
+        "title": "HTB: Valentine",
+        "url": "writeups/Valentine/Valentine.html",
+        "tags": [
+            "Heartbleed",
+            "SSL",
+            "Tmux"
+        ],
+        "date": "14/11/2024"
+    },
+    {
+        "title": "HTB: Solidstate",
+        "url": "writeups/Solidstate/Solidstate.html",
+        "tags": [
+            "RSIP",
+            "Default Creds",
+            "JAMES",
+            "SSH",
+            "POP3",
+            "Restricted Bash",
+            "Cron"
+        ],
+        "date": "14/11/2024"
+    },
+    {
+        "title": "HTB: Sense",
+        "url": "writeups/Sense/Sense.html",
+        "tags": [
+            "Command Injection",
+            "PfSense"
+        ],
+        "date": "11/11/2024"
+    },
+    {
+        "title": "HTB: Cronos",
+        "url": "writeups/Cronos/Cronos.html",
+        "tags": [
+            "DNS",
+            "Zone Transfer",
+            "SQL Injection",
+            "Command Execution",
+            "Cron"
+        ],
+        "date": "01/11/2024"
+    },
+    {
+        "title": "HTB: Nibbles",
+        "url": "writeups/Nibbles/Nibbles.html",
+        "tags": [
+            "SQL injection",
+            "Nibbleblog",
+            "File Upload",
+            "Sudo"
+        ],
+        "date": "30/09/2024"
+    },
+    {
+        "title": "HTB: Bashed",
+        "url": "writeups/Bashed/Bashed.html",
+        "tags": [
+            "Command Execution",
+            "Cron"
+        ],
+        "date": "30/09/2024"
+    },
+    {
+        "title": "HTB: Shocker",
+        "url": "writeups/Shocker/Shocker.html",
+        "tags": [
+            "Shellshock",
+            "Sudo"
+        ],
+        "date": "25/09/2024"
+    },
+    {
+        "title": "HTB: Openadmin",
+        "url": "writeups/Openadmin/Openadmin.html",
+        "tags": [
+            "OpenNetAdmin",
+            "SSH",
+            "Sudo"
+        ],
+        "date": "17/09/2024"
+    },
+    {
+        "title": "HTB: Lame",
+        "url": "writeups/Lame/Lame.html",
+        "tags": [
+            "Distcc",
+            "Samba"
+        ],
+        "date": "08/07/2024"
+    }
 ]

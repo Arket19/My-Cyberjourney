@@ -143,7 +143,9 @@ nav ul li a {
     transition: transform 0.2s, box-shadow 0.2s;
     text-decoration: none;
     border: 2px solid #00bcd4;
+    background-image: url("assets/htb.png");
 }
+
 
 /* Efecto al pasar el ratón por encima de un writeup */
 .writeup-item:hover {
@@ -157,6 +159,7 @@ nav ul li a {
     font-size: 2rem;
     max-height: 3rem;
     font-weight: bolder;
+    color: white;
 }
 
 /* Etiquetas */
@@ -171,7 +174,7 @@ nav ul li a {
     display: inline-block; /* Etiquetas alineadas */
     padding: 5px 8px;
     background-color: #4caf50; /* Fondo verde */
-    color: white; /* Texto blanco */
+    color: white;
     border-radius: 3px;
 }
 
@@ -179,7 +182,7 @@ nav ul li a {
 .writeup-item .fecha {
     margin-top: auto; /* Empuja la fecha hacia la parte inferior */
     font-size: 0.9rem;
-    color: gray;
+    color: white;
     text-align: right; /* Alinea la fecha a la derecha */
 }
 

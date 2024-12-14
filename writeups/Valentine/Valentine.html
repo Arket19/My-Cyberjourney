@@ -1,0 +1,80 @@
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Valentine - My Cyberjourney</title>
+        <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="Valentine.css" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Alumni+Sans+Pinstripe:ital@0;1&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Roboto+Serif:ital,opsz,wght@0,8..144,100..900;1,8..144,100..900&display=swap" rel="stylesheet">
+    </head>
+    <body>
+        <!-- Menú -->
+        <nav class="w3-bar">
+            <div class="logo">
+                <p>My Cyberjourney</p>
+            </div>
+            <div class="w3-bar-item w3-right w3-hide-large w3-hover-opacity" onclick="w3_open()">
+                <i class="fa fa-bars w3-xlarge"></i>
+            </div>
+            <div class="w3-hide-small">
+                <ul class="elementos-menu">
+                    <li class="w3-bar-item"><a href="index.html">Home</a></li>
+                    <li class="w3-bar-item"><a href="curriculum/curriculum.html">Resume (CV)</a></li>
+                    <li class="w3-bar-item"><a href="writeups/writeups.html">Writeups</a></li>
+                    <li class="w3-bar-item"><a href="learning/learning.html">Learning Journey</a></li>
+                </ul>
+            </div>
+        </nav> 
+        <div class="content">
+            <h1 class="title">EASY-VALENTINE</h1>
+<h1>1. Recon</h1>
+<h2>Nmap</h2>
+<p>I started pinging the target to check if it was a Linux or a Windows system. The Time-To-Live (ttl) was 63, which is very close to 64, so it was a Linux system. Had it been close to 128 (or 128) it would have been a Windows system. After that I conducted an Nmap scan to detect active services on the target using <code>-p-</code> to scan all ports. Given that it was a Hack The Box machine (a controlled environment), I optimized the scan for speed using the following flags: <code>-sS</code> for a SYN scan, <code>-Pn</code> to skip the host discovery stage, and <code>-n</code> to skip reverse DNS resolution for higher speed.</p>
+<p><img alt="image.png" src="image.png" /></p>
+<p><img alt="image.png" src="image%201.png" /></p>
+<p>The scan revealed the following open ports:</p>
+<ul>
+<li><strong>SSH</strong> on port 22.</li>
+<li><strong>HTTP</strong> on port 80</li>
+<li><strong>HTTPS</strong> on port 443</li>
+</ul>
+<p>Then, I conducted a more thorough scan on those ports using service version detection (<code>-sV</code>) and the Nmap Scripting Engine (NSE) with default scripts (<code>-sC</code>). I also saved the output for easy reference later (<code>-oN nmap</code>).</p>
+<p><img alt="image.png" src="image%202.png" /></p>
+<h2>Website - TCP 80</h2>
+<p>After completing the scan, I visited the webpage in search of potential web vulnerabilities. However, the site only displayed an image of a woman and a bleeding heart. This was intended to indicate that the target was vulnerable to the Heartbleed vulnerability, but I had never exploited it before.</p>
+<p><img alt="image.png" src="image%203.png" /></p>
+<p><img alt="image.png" src="image%204.png" /></p>
+<p>Since the site didn’t provide any useful information, I decided to run <code>Gobuster</code> to brute-force directory paths. I started with the <code>common.txt</code> wordlist to quickly identify potential directories for further investigation. While analyzing those initial results, I initiated a second <code>Gobuster</code> scan using the <code>directory-list-2.3-medium.txt</code> wordlist, knowing it would take significantly longer to complete. However, the second scan didn’t show any new results.</p>
+<p>In the <code>/dev</code> directory, I discovered two files: <code>notes.txt</code> and <code>hype_key</code>. The first appeared to be notes taken by the webpage's creator, while the second contained a series of hexadecimal numbers. I used <code>CyberChef</code> to decode the hidden message, which turned out to be an encrypted RSA key.</p>
+<p><img alt="image.png" src="image%205.png" /></p>
+<p><img alt="image.png" src="image%206.png" /></p>
+<p><img alt="image.png" src="image%207.png" /></p>
+<h1>2. Gaining Access</h1>
+<p>As I didn’t have a passphrase to decrypt the <code>RSA key</code>, I continued enumerating the services. After some time, I discovered that the <code>SSL</code> certificate was vulnerable to <code>Heartbleed</code>. This vulnerability affects the <code>OpenSSL</code> cryptography library and is executed through the <code>TLS</code> heartbeat extension. This extension allows two computers to maintain uninterrupted communication by exchanging encrypted data packets. These packets contain textual messages along with their specified lengths (for example: "potato", 6).</p>
+<p>The issue arises when the receiver overtrusts the sender and fails to verify that the indicated length matches the actual length of the textual message. This allows attackers to send a message with an exaggerated length, prompting the receiver to respond with the original message along with additional data from its memory.</p>
+<p><img alt="image.png" src="image%208.png" /></p>
+<p>While investigating about the HeartBleed vulnerability I found an  <a href="https://xkcd.com/1354/">image</a> which I found very descriptive.</p>
+<p><img alt="image.png" src="image%209.png" /></p>
+<p>To exploit this vulnerability, I found a <a href="https://gist.github.com/eelsivart/10174134">Python script</a>  that automated the process. I executed the script using the command <code>python2 heartbleed.py 10.10.10.79 -n 50 &gt; heartbleed.txt</code>, which generated a file containing the dumped memory. This file included random characters and a PHP variable called <code>$text</code>, with a value of <code>aGVhcnRibGVlZGJlbGlldmV0aGVoeXBlCg==</code>. I then used the <code>/decode.php</code> directory I had previously discovered with <code>Gobuster</code> to decode the string, revealing the plaintext message: <code>heartbleedbelievethehype</code>.</p>
+<p><img alt="image.png" src="image%2010.png" /></p>
+<p><img alt="image.png" src="image%2011.png" /></p>
+<p><img alt="image.png" src="image%2012.png" /></p>
+<p>I suspected that this could be the passphrase for the RSA key, so I used <code>openssl</code> to attempt to decrypt the key.</p>
+<p><img alt="image.png" src="image%2013.png" /></p>
+<p><img alt="image.png" src="image%2014.png" /></p>
+<p>I attempted to log in via <code>ssh</code> using the username <code>hype</code>, as the encrypted RSA key was stored in a file named <code>hype_key</code>. The login was successful, and I was able to retrieve the user flag.</p>
+<p><img alt="image.png" src="image%2015.png" /></p>
+<h1>3. Privilege Escalation</h1>
+<h2>Root</h2>
+<p>After gaining access to the target, I checked for any cron jobs or sudo permissions but couldn’t find any. I also examined which binaries had the SUID bit set, but there were no common binaries available for exploitation.</p>
+<p><img alt="image.png" src="image%2016.png" /></p>
+<p>While examining the <code>bash_history</code> file, I discovered that <code>tmux</code> had been used, resulting in the creation of a socket file. I noticed that the owner of the socket file was <code>root</code>, but it was associated with the <code>hype</code> group. By using the <code>hype</code> user, I was able to access the session with the command <code>tmux -S dev_sess</code>, effectively taking control of the session as its owner (root). This granted me root permissions, allowing me to retrieve the root flag.</p>
+<p><img alt="image.png" src="image%2017.png" /></p>
+        </div>
+    </body>
+</html>

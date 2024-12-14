@@ -1,0 +1,109 @@
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Lame - My Cyberjourney</title>
+        <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="Lame.css" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Alumni+Sans+Pinstripe:ital@0;1&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Roboto+Serif:ital,opsz,wght@0,8..144,100..900;1,8..144,100..900&display=swap" rel="stylesheet">
+    </head>
+    <body>
+        <!-- Menú -->
+        <nav class="w3-bar">
+            <div class="logo">
+                <p>My Cyberjourney</p>
+            </div>
+            <div class="w3-bar-item w3-right w3-hide-large w3-hover-opacity" onclick="w3_open()">
+                <i class="fa fa-bars w3-xlarge"></i>
+            </div>
+            <div class="w3-hide-small">
+                <ul class="elementos-menu">
+                    <li class="w3-bar-item"><a href="index.html">Home</a></li>
+                    <li class="w3-bar-item"><a href="curriculum/curriculum.html">Resume (CV)</a></li>
+                    <li class="w3-bar-item"><a href="writeups/writeups.html">Writeups</a></li>
+                    <li class="w3-bar-item"><a href="learning/learning.html">Learning Journey</a></li>
+                </ul>
+            </div>
+        </nav> 
+        <div class="content">
+            <h1 class="title">EASY - LAME</h1>
+<h1>1. Recon</h1>
+<p>I began by pinging the target machine to observe the TTL (Time-to-Live) value. Since it was close to 64, I identified it as a Linux system; had it been closer to 128, it would have indicated a Windows machine. Next, I conducted a <code>nmap</code> scan to detect active services on the target. Given that this is a Hack The Box machine (a controlled environment), I optimized the scan for speed using the following flags: <code>--min-rate 5000</code>, <code>-sS</code> for a SYN scan, and <code>-T5</code> for maximum speed.</p>
+<p><img alt="image.png" src="image.png" /></p>
+<p>The scan has revealed the following open ports:</p>
+<ul>
+<li><strong>FTP</strong> on port 21</li>
+<li><strong>SSH</strong> on port 22</li>
+<li><strong>NetBios-ssn</strong> on port 139</li>
+<li><strong>microsoft</strong>-ds on port 445</li>
+<li><strong>distccd</strong> on port 3632</li>
+</ul>
+<p>I conducted a thorough scan with service version detection (<code>-sV</code>) and the Nmap Scripting Engine (NSE) with default scripts (<code>-sC</code>). I also saved the output for easy reference later.</p>
+<p><img alt="image.png" src="image%201.png" /></p>
+<p>For now I know the machine has the following services running:</p>
+<ul>
+<li>FTP (File Transfer Protocol)<ul>
+<li>Service version → vsftpd 2.3.4</li>
+<li>Anonymous login → allowed</li>
+</ul>
+</li>
+<li>SSH (Secure Shell)<ul>
+<li>Service version → OpenSSH 4.7p1</li>
+</ul>
+</li>
+<li>SMB with NetBios (Server Message Block with Network Basic Input Output System)<ul>
+<li>Service version → Samba smbd 3.0.20-Debian</li>
+</ul>
+</li>
+<li>Distcc (tool that distributes the compilation workload between the computers in a network)<ul>
+<li>Service version → distccd v1</li>
+</ul>
+</li>
+</ul>
+<h1>2. Gaining Access</h1>
+<h2>FTP service</h2>
+<p>The Nmap script indicated that anonymous login was enabled. I attempted to explore the server for uploaded files but found none. </p>
+<p><img alt="image.png" src="image%202.png" /></p>
+<p>I then searched for known exploits targeting the vsftpd version. While a CVE exists for vsftpd 2.3.4, I was unable to obtain a shell using either Metasploit or various scripts from GitHub.</p>
+<p><img alt="image.png" src="image%203.png" /></p>
+<p><img alt="image.png" src="image%204.png" /></p>
+<p><img alt="image.png" src="image%205.png" /></p>
+<h2>Distcc service</h2>
+<p>Given that the version of <code>distcc</code> in use was vulnerable to arbitrary code execution, I attempted to exploit it using an NSE script. Since the target was vulnerable, I used the exploit script from GitHub <a href="https://github.com/k4miyo/CVE-2004-2687/blob/k4miyo/CVE-2004-2687.py">CVE-2004-2687</a>, successfully gaining access to the system as the <code>daemon</code> user. Afterward, I listed the home directories and retrieved the <code>user.txt</code> flag.</p>
+<p><img alt="image.png" src="image%206.png" /></p>
+<p><img alt="image.png" src="image%207.png" /></p>
+<h1><strong>3. Privilege Escalation</strong></h1>
+<h2>Root</h2>
+<p>I ran <code>enum4linux</code> to gather as much information about the SMB service as possible. The output indicated access to the <code>/tmp</code> share, but after downloading and reviewing the files, I found nothing of value.</p>
+<p><img alt="image.png" src="image%208.png" /></p>
+<p><img alt="image.png" src="image%209.png" /></p>
+<p>I then checked for known exploits targeting the version of <code>Samba</code> in use. The second result was a <code>Metasploit</code> script written in Ruby that appeared to allow command execution on the system. Instead of running the script blindly, I reviewed it first. The script exploits the login function by injecting commands using <code>/=</code> and backticks, which causes the server to execute whatever is contained within.</p>
+<p><img alt="image.png" src="image%2010.png" /></p>
+<p><img alt="image.png" src="image%2011.png" /></p>
+<p><code>Nohup</code> is a function that ensures a command is executed, even if the session is closed. So the server runs <code>nohup payload</code> being “payload” any command the user of the exploit wants.</p>
+<p>I decided to manually replicate the exploit rather than relying on the automated Metasploit script. From inside the server, I used the logon ****command to execute the payload. I redirected the output of the exploit through <code>Netcat</code> back to my Kali, which provided me with a <code>root</code> shell.</p>
+<p><img alt="image.png" src="image%2012.png" /></p>
+<p><img alt="image.png" src="image%2013.png" /></p>
+<p>The <code>root.txt</code> flag could be printed using <code>cat /root/root.txt</code> in the payload.</p>
+<p><img alt="image.png" src="image%2014.png" /></p>
+<p>Had further exploration of the system been needed, I could have also sent a shell through netcat to my own system.</p>
+<p><img alt="image.png" src="image%2015.png" /></p>
+<p><img alt="image.png" src="image%2016.png" /></p>
+<p>Additionally, I could have spawned a fully upgraded tty using the following commands</p>
+<p><code>python
+script /dev/null -c bash
+export TERM="xterm"
+export SHELL="bash"
+^Z  #Press ctrl + z
+stty raw -echo;fg
+reset xterm
+stty rows 44 columns 184</code></p>
+<p><img alt="image.png" src="image%2017.png" /></p>
+        </div>
+    </body>
+</html>

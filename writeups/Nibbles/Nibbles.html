@@ -1,0 +1,99 @@
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Nibbles - My Cyberjourney</title>
+        <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="Nibbles.css" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Alumni+Sans+Pinstripe:ital@0;1&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Roboto+Serif:ital,opsz,wght@0,8..144,100..900;1,8..144,100..900&display=swap" rel="stylesheet">
+    </head>
+    <body>
+        <!-- Menú -->
+        <nav class="w3-bar">
+            <div class="logo">
+                <p>My Cyberjourney</p>
+            </div>
+            <div class="w3-bar-item w3-right w3-hide-large w3-hover-opacity" onclick="w3_open()">
+                <i class="fa fa-bars w3-xlarge"></i>
+            </div>
+            <div class="w3-hide-small">
+                <ul class="elementos-menu">
+                    <li class="w3-bar-item"><a href="index.html">Home</a></li>
+                    <li class="w3-bar-item"><a href="curriculum/curriculum.html">Resume (CV)</a></li>
+                    <li class="w3-bar-item"><a href="writeups/writeups.html">Writeups</a></li>
+                    <li class="w3-bar-item"><a href="learning/learning.html">Learning Journey</a></li>
+                </ul>
+            </div>
+        </nav> 
+        <div class="content">
+            <h1 class="title">EASY - NIBBLES</h1>
+<h1>1. Recon</h1>
+<h2>Nmap</h2>
+<p>To start the enumeration phase I conducted a Nmap scan to identify active services on the target using the <code>-p-</code> flag to scan all ports. Since this is a Hack The Box machine, I optimized the scan for speed with the following flags:</p>
+<ul>
+<li><code>-min-rate 5000</code></li>
+<li><code>sS</code> (SYN scan)</li>
+<li><code>T5</code> (maximum speed)</li>
+</ul>
+<p><img alt="image.png" src="image.png" /></p>
+<p>The scan revealed the following open ports:</p>
+<ul>
+<li><strong>SSH</strong> on port 22</li>
+<li><strong>HTTP</strong> on port 80</li>
+</ul>
+<p>Next, I performed a more detailed scan with service version detection (<code>-sV</code>) and used the Nmap Scripting Engine (NSE) with default scripts (<code>-sC</code>). I saved the output for reference using the <code>-oN</code> flag.</p>
+<p><img alt="image.png" src="image%201.png" /></p>
+<h2>1.2 Web Enumeration</h2>
+<p>After scanning for services, I utilized <code>whatweb</code> to identify the technologies used by the HTTP service. </p>
+<p><img alt="image.png" src="image%202.png" /></p>
+<p>I also initiated a <code>gobuster</code> directory scan, which ran while I explored the website manually. However, the scan didn’t reveal any significant directories or files.</p>
+<p><img alt="image.png" src="image%203.png" /></p>
+<p>The homepage of the website displayed a simple <em>"Hello World!"</em> message. Upon inspecting the page's source code, I discovered a comment referencing a <code>/nibbleblog/</code> directory: <em>"Nothing interesting here!"</em></p>
+<p><img alt="image.png" src="image%204.png" /></p>
+<p><img alt="image.png" src="image%205.png" /></p>
+<p>I manually navigated to <code>/nibbleblog/</code>, which revealed a blogging platform. At this point, I re-ran <code>gobuster</code> to search for additional hidden directories or files related to Nibbleblog, and this time it found something valuable.</p>
+<p><img alt="image.png" src="image%206.png" /></p>
+<p><img alt="image.png" src="image%207.png" /></p>
+<h1>2. Gaining Access</h1>
+<p>The <code>/admin.php</code> directory led to the login panel for Nibbleblog's administration area.</p>
+<p>I attempted to bypass the login form using SQL injection. I employed <code>BurpSuite</code> to automate and monitor the attempts. After several failed attempts, which were blocked due to rate-limiting, I finally succeeded in bypassing the authentication.</p>
+<p>```</p>
+<p>```</p>
+<p><img alt="image.png" src="image%208.png" /></p>
+<p><img alt="image.png" src="image%209.png" /></p>
+<p><img alt="image.png" src="image%2010.png" /></p>
+<p><img alt="image.png" src="image%2011.png" /></p>
+<p>Once inside the admin panel, I identified the version of Nibbleblog in use. I searched for known vulnerabilities related to this version and came across <a href="https://github.com/dix0nym/CVE-2015-6967/blob/main/exploit.py">CVE-2015-6967</a> which exploits an image upload feature in Nibbleblog's plugins to execute arbitrary PHP code. So I looked for the plugin manually and uploaded a php reverse shell ( <a href="https://github.com/pentestmonkey/php-reverse-shell/blob/master/php-reverse-shell.php">PentestMonkey PHP Reverse Shell</a> ).</p>
+<p><img alt="image.png" src="image%2012.png" /></p>
+<p><img alt="image.png" src="image%2013.png" /></p>
+<p><img alt="image.png" src="image%2014.png" /></p>
+<p>Once the reverse shell was uploaded I navigated to the plugin folder and executed it. This way I got access to the system.</p>
+<p><img alt="image.png" src="image%2015.png" /></p>
+<p><img alt="image.png" src="image%2016.png" /></p>
+<p>After successfully uploading the PHP reverse shell, I navigated to the plugin folder and triggered the file to establish a reverse shell connection back to my system.</p>
+<p><code>python
+script /dev/null -c bash #Starts a new shell session without logging.
+^Z #Pauses the new shell.
+stty raw -echo;fg #Sets the terminal to raw mode, unsets echoing, and then brings the shell back.
+reset #Resets the terminal to a sane state.
+xterm #Sets the terminal type.
+export TERM=xterm #Definition of necessary environment variables.
+export SHELL=bash
+stty rows 59 columns 116 #Definition of the window size.</code></p>
+<h1>3. Privilege Escalation</h1>
+<h2>Root</h2>
+<p>With a stable TTY, I checked for available sudo permissions using the command <code>sudo -l</code>. I discovered that I had permission to execute a script named monitor.sh as the root user.  I located monitor.sh on the system and inspected its content. The script appeared to be a basic system monitoring tool, which I could edit since I had write permissions.</p>
+<p><img alt="image.png" src="image%2017.png" /></p>
+<p><img alt="image.png" src="image%2018.png" /></p>
+<p>To exploit this, I modified monitor.sh to send a reverse shell back to my machine. By executing the script with sudo, the reverse shell was initiated with root privileges.</p>
+<p><img alt="image.png" src="image%2019.png" /></p>
+<p>Finally, I was able to access the root user and capture the root flag.</p>
+<p><img alt="image.png" src="image%2020.png" /></p>
+        </div>
+    </body>
+</html>
