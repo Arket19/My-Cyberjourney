@@ -1,4 +1,4 @@
-1. Export a document from notion as 'Markdown and CSV' in the 'files' folder (.zip).
+1. Export a document from notion as 'Markdown and CSV' in the 'files' folder (.zip). Make sure to put just one .zip at once.
 
 2. Right click in 'CreateHTMLfromMD.ps1' and select 'execute with Powershell'.
 

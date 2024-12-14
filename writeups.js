@@ -50,7 +50,7 @@ async function loadWriteups() {
 
         Array.from(allTags).sort().forEach(tag => {
             const tagButton = document.createElement('button');
-            tagButton.className = 'w3-bar-item w3-button';
+            tagButton.className = 'w3-bar-item w3-button botones';
             tagButton.textContent = tag;
             tagButton.setAttribute('onclick', `filterWriteups('${tag}')`);
             tagsContainer.appendChild(tagButton);
@@ -63,22 +63,76 @@ async function loadWriteups() {
 
 function filterWriteups(tag) {
     const writeups = document.querySelectorAll('.writeup-item');
+    const buttons = document.querySelectorAll('.botones');
 
+    // Array para almacenar las etiquetas activadas
+    let selectedTags = [];
+
+    // Si se selecciona "All", desmarcar todos los botones y mostrar todos los writeups
     if (tag === 'All') {
+        // Si "All" es seleccionado, desmarcar todos los demás botones
+        buttons.forEach(button => button.classList.remove('active'));
+        const allButton = Array.from(buttons).find(button => button.textContent === 'All');
+        if (allButton) {
+            allButton.classList.add('active');
+        }
+
+        // Mostrar todos los writeups
         writeups.forEach(writeup => {
-            writeup.style.display = 'block';
+            writeup.style.display = 'flex';
         });
-    } else {
-        writeups.forEach(writeup => {
-            const tagSpans = writeup.querySelectorAll('span');
-            const tags = Array.from(tagSpans).map(span => span.textContent);
-            if (tags.includes(tag)) {
-                writeup.style.display = 'block';
-            } else {
-                writeup.style.display = 'none';
-            }
-        });
+        return;
     }
+
+    // Buscar el botón correspondiente a la etiqueta seleccionada y alternar su estado
+    const clickedButton = Array.from(buttons).find(button => button.textContent === tag);
+    if (clickedButton) {
+        clickedButton.classList.toggle('active');
+    }
+
+    // Guardar las etiquetas seleccionadas
+    selectedTags = Array.from(buttons)
+        .filter(button => button.classList.contains('active') && button.textContent !== 'All')
+        .map(button => button.textContent);
+
+    // Si no hay etiquetas seleccionadas, activar "All" y mostrar todos los writeups
+    if (selectedTags.length === 0) {
+        const allButton = Array.from(buttons).find(button => button.textContent === 'All');
+        if (allButton) {
+            allButton.classList.add('active');
+        }
+
+        writeups.forEach(writeup => {
+            writeup.style.display = 'flex';
+        });
+        return;
+    }
+
+    // Desmarcar "All" si hay otras etiquetas activadas
+    const allButton = Array.from(buttons).find(button => button.textContent === 'All');
+    if (allButton) {
+        allButton.classList.remove('active');
+    }
+
+    // Filtrar los writeups según las etiquetas activas
+    writeups.forEach(writeup => {
+        const tagSpans = writeup.querySelectorAll('span');
+        const tags = Array.from(tagSpans).map(span => span.textContent);
+
+        // Verificar si el writeup tiene todas las etiquetas seleccionadas
+        const matchesAllTags = selectedTags.every(tag => tags.includes(tag));
+
+        if (matchesAllTags) {
+            writeup.style.display = 'flex';
+        } else {
+            writeup.style.display = 'none';
+        }
+    });
 }
+
+
+
+
+
 
 document.addEventListener('DOMContentLoaded', loadWriteups);

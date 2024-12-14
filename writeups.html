@@ -45,7 +45,7 @@
     <!-- Barra de etiquetas -->
     <div class="w3-container barra_de_etiquetas">
         <div>
-            <button class="w3-bar-item w3-button" onclick="filterWriteups('All')">All</button>
+            <button class="w3-bar-item w3-button botones active" onclick="filterWriteups('All')">All</button>
         </div>
     </div>
 
@@ -55,19 +55,6 @@
     <div class="lista_de_writeups">
     </div>
 
-    <!-- Script para filtro -->
-    <script>
-        function filterWriteups(tag) {
-            const writeups = document.querySelectorAll('.writeup-item');
-            writeups.forEach(writeup => {
-                if (tag === 'all' || writeup.classList.contains(tag)) {
-                    writeup.style.display = 'block';
-                } else {
-                    writeup.style.display = 'none';
-                }
-            });
-        }
-    </script>
 
 </body>
 </html>

@@ -1,0 +1,90 @@
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Openadmin - My Cyberjourney</title>
+        <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="Openadmin.css" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Alumni+Sans+Pinstripe:ital@0;1&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Roboto+Serif:ital,opsz,wght@0,8..144,100..900;1,8..144,100..900&display=swap" rel="stylesheet">
+    </head>
+    <body>
+        <!-- Menú -->
+        <nav class="w3-bar">
+            <div class="logo">
+                <p>My Cyberjourney</p>
+            </div>
+            <div class="w3-bar-item w3-right w3-hide-large w3-hover-opacity" onclick="w3_open()">
+                <i class="fa fa-bars w3-xlarge"></i>
+            </div>
+            <div class="w3-hide-small">
+                <ul class="elementos-menu">
+                    <li class="w3-bar-item"><a href="index.html">Home</a></li>
+                    <li class="w3-bar-item"><a href="curriculum/curriculum.html">Resume (CV)</a></li>
+                    <li class="w3-bar-item"><a href="writeups/writeups.html">Writeups</a></li>
+                    <li class="w3-bar-item"><a href="learning/learning.html">Learning Journey</a></li>
+                </ul>
+            </div>
+        </nav> 
+        <div class="content">
+            <h1 class="title">EASY - OPENADMIN</h1>
+<h1><strong>1. Recon</strong></h1>
+<h2>Nmap</h2>
+<p>I started with an <strong>Nmap</strong> scan to identify which services were running on the target machine. Since this was a <strong>Hack The Box (HTB)</strong> machine (controlled environment), I optimized the scan for speed by using the flags <code>--min-rate 5000</code>, <code>-sS</code> for a SYN scan, and <code>-T5</code> for the highest timing template, making the scan significantly faster.</p>
+<p><img alt="image.png" src="image.png" /></p>
+<p>The scan revealed a couple of open ports:</p>
+<ul>
+<li><strong>SSH</strong> on port 22</li>
+<li><strong>HTTP</strong> on port 80</li>
+</ul>
+<p>To get more detailed information, I followed up with a more thorough scan, using the <strong>service version detection</strong> flag (<code>-sV</code>) and the <strong>Nmap Scripting Engine (NSE)</strong> with default scripts (<code>-sC</code>). I also exported the results to a file so I could quickly reference them later.</p>
+<p><img alt="image.png" src="image%201.png" /></p>
+<p>This didn’t reveal anything exploitable (yet), so I switched my focus to exploring the HTTP service to see if the web had any vulnerabilities.</p>
+<h2>Website - 80 TCP</h2>
+<p>I began by running <strong><code>WhatWeb</code></strong> to identify the technologies and versions used on the website to spot vulnerabilities.</p>
+<p><img alt="image.png" src="image%202.png" /></p>
+<p>Next, I performed a directory fuzzing scan to uncover hidden directories or endpoints on the server. For this, I used <code>Gobuster</code>. The scan revealed a few directories: <code>/artwork</code>, <code>/sierra</code>, and <code>/music</code>.</p>
+<p><img alt="image.png" src="image%203.png" /></p>
+<p>While browsing through <code>/music</code>, I found another interesting directory: <code>/ona</code>. This led me to what looked like an admin panel (<strong>"</strong>Create an Account<strong>"</strong> button).</p>
+<p><img alt="image.png" src="image%204.png" /></p>
+<p>The version of the admin panel was displayed on the page, so I searched for known vulnerabilities tied to that specific version.</p>
+<p><img alt="image.png" src="image%205.png" /></p>
+<h1>2. Gaining Access</h1>
+<p>The version had a Remote Code Execution (RCE) vulnerability. A quick Google search led me to a GitHub repository containing an exploit script. The script automated the entire process for me, making it easier exploit the RCE.</p>
+<p><img alt="image.png" src="image%206.png" /></p>
+<p><img alt="image.png" src="image%207.png" /></p>
+<p><img alt="image.png" src="image%208.png" /></p>
+<p>I downloaded the Python script from the GitHub repo and ran it, which gave me access to the system as the <strong><code>www-data</code></strong> user.</p>
+<p><img alt="image.png" src="image%209.png" /></p>
+<h1>3. Privilege Escalation</h1>
+<h2>Jimmy</h2>
+<p>Once I had access to the file system I found a file that contained clear-text credentials. I also discovered two usernames: <code>jimmy</code> and <code>joanna</code>.</p>
+<p><img alt="image.png" src="image%2010.png" /></p>
+<p>Using the credentials I found, I was able to log in to the server as j<strong>immy</strong> via SSH.</p>
+<p><img alt="image.png" src="image%2011.png" /></p>
+<h2>Joanna</h2>
+<p>Exploring the web directories I discovered a local virtual host running on port 52846 wich belonged to the user <code>joanna</code>.</p>
+<p><img alt="image.png" src="image%2012.png" /></p>
+<p>I also found that <code>/var/www/internal</code> was owned by the group <strong>internal</strong> and the user <code>jimmy</code>.</p>
+<p>Exploring the internal folder, I found that <code>/main.php</code> printed the <strong>joanna</strong>´s RSA key. Using <code>curl</code>, I sent a GET request to the virtual host and managed to extract <code>joanna’s</code> ****RSA key.</p>
+<p><img alt="image.png" src="image%2013.png" /></p>
+<p>While trying to connect with that key to the user <code>joanna</code> through SSH, I was prompted to enter the passphrase for the RSA key.</p>
+<p><img alt="image.png" src="image%2014.png" /></p>
+<p>To crack the passphrase, I converted the key into a hash format using <strong><code>ssh2john</code></strong> and then ran it through <code>John the Ripper</code> with the <code>rockyou.txt</code> wordlist. After a bit of brute-forcing, I successfully retrieved the passphrase.</p>
+<p><img alt="image.png" src="image%2015.png" /></p>
+<p><img alt="image.png" src="image%2016.png" /></p>
+<p>Having the passphrase I could get access to the user <code>joanna</code> and capture the system flag.</p>
+<p><img alt="image.png" src="image%2017.png" /></p>
+<h2>Root</h2>
+<p>I checked sudo permissions and saw that <strong><code>joanna</code></strong> had the ability to use <code>nano</code> as <code>root</code> to edit the file <code>/opt/priv</code>.</p>
+<p><img alt="image.png" src="image%2018.png" /></p>
+<p>I executed <code>sudo -u root nano /opt/priv</code> and then used the <code>Ctrl+R</code> and <code>Ctrl+X</code> key combination within <strong><code>nano</code></strong> to execute commands as <code>root</code>. I gave <strong><code>/bin/bash</code></strong> root-level permissions, which allowed me to spawn a root shell and capture the root flag.</p>
+<p><img alt="image.png" src="image%2019.png" /></p>
+<p><img alt="image.png" src="image%2020.png" /></p>
+        </div>
+    </body>
+</html>

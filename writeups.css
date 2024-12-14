@@ -97,9 +97,10 @@ nav ul li a {
 }
 .w3-bar-item {
     font-family: 'Roboto Serif', serif;
-    font-size: 1rem;
-    padding: 10px;
+    font-size: 1rem; 
+    margin: 2px;
     transition: background-color 0.3s, color 0.3s;
+    padding: 10px;
 }
 
 .w3-bar-item:hover {
@@ -182,7 +183,10 @@ nav ul li a {
     text-align: right; /* Alinea la fecha a la derecha */
 }
 
-
+.w3-bar-item.w3-button.active {
+    background-color: white; /* Fondo blanco para los botones activos */
+    color: black; /* Texto negro para contraste */
+}
 
 
 

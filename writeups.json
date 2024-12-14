@@ -1,101 +1,30 @@
 [
     {
-        "title": "HTB: Doctor",
-        "url": "writeups/Doctor/Doctor.html",
+        "title": "HTB: Openadmin",
+        "url": "writeups/Openadmin/Openadmin.html",
         "tags": [
-            "naranja",
-            "naranjo",
-            "nondarina"
+            "OpenNetAdmin",
+            "SSH",
+            "Sudo"
         ],
-        "date": "13/12/2024"
-    },
-    {
-        "title": "HTB: Tabby",
-        "url": "writeups/Tabby/Tabby.html",
-        "tags": [
-            "LFI",
-            "Privilege Escalation"
-        ],
-        "date": "10/12/2024"
-    },
-    {
-        "title": "HTB: Valentine",
-        "url": "writeups/Valentine/Valentine.html",
-        "tags": [
-            "Heartbleed",
-            "Recon"
-        ],
-        "date": "03/11/2024"
-    },
-    {
-        "title": "HTB: SolidState",
-        "url": "writeups/SolidState/SolidState.html",
-        "tags": [
-            "SMTP",
-            "Privilege Escalation"
-        ],
-        "date": "25/10/2024"
-    },
-    {
-        "title": "HTB: Cronos",
-        "url": "writeups/Cronos/Cronos.html",
-        "tags": [
-            "DNS",
-            "Privilege Escalation"
-        ],
-        "date": "15/10/2024"
-    },
-    {
-        "title": "HTB: Sense",
-        "url": "writeups/Sense/Sense.html",
-        "tags": [
-            "Recon",
-            "Exploitation"
-        ],
-        "date": "05/10/2024"
-    },
-    {
-        "title": "HTB: Nibbles",
-        "url": "writeups/Nibbles/Nibbles.html",
-        "tags": [
-            "Web Exploitation",
-            "Privilege Escalation"
-        ],
-        "date": "27/09/2024"
-    },
-    {
-        "title": "HTB: Bashed",
-        "url": "writeups/Bashed/Bashed.html",
-        "tags": [
-            "Web Exploitation"
-        ],
-        "date": "15/09/2024"
+        "date": "14/12/2024"
     },
     {
         "title": "HTB: Shocker",
         "url": "writeups/Shocker/Shocker.html",
         "tags": [
-            "Web Exploitation",
-            "Shellshock"
+            "Shellshock",
+            "Sudo"
         ],
-        "date": "03/09/2024"
+        "date": "14/12/2024"
     },
     {
         "title": "HTB: Lame",
         "url": "writeups/Lame/Lame.html",
         "tags": [
-            "Exploit",
+            "Distcc",
             "Samba"
         ],
-        "date": "20/08/2024"
-    },
-    {
-        "title": "HTB: OpenAdmin",
-        "url": "writeups/OpenAdmin/OpenAdmin.html",
-        "tags": [
-            "Recon",
-            "Privesc"
-        ],
-        "date": "05/08/2024"
+        "date": "14/12/2024"
     }
 ]
