@@ -151,29 +151,33 @@ def process_zip_files():
             with open(html_output, 'w', encoding='utf-8') as html_file:
                 html_file.write(generate_html(html_content, title))
 
-            css_content = """/* General */
+            css_content = """
+/* General */
 body {
     font-family: 'Roboto Serif', serif;
-    background-color: #222222; /* Fondo negro */
-    color: white; /* Texto claro */
+    background-color: #222222;
+    /* Fondo negro */
+    color: white;
+    /* Texto claro */
     margin: 0;
     padding: 0;
+    line-height: 1.7;
 }
 
 /* Barra de navegación */
 nav {
-    background-color: #333; 
+    background-color: #333;
     color: white;
-    padding: 5px 10px; 
+    padding: 5px 10px;
     display: flex;
     justify-content: space-between;
     align-items: center;
     height: 5rem;
-    position: fixed; 
-    top: 0; 
-    left: 0; 
+    position: fixed;
+    top: 0;
+    left: 0;
     width: 100%;
-    z-index: 1000; 
+    z-index: 1000;
 }
 
 nav .logo a {
@@ -210,14 +214,16 @@ nav ul li a {
     background-color: #222222;
 }
 
-.title{
+.title {
     color: white;
     font-family: 'Alumni Sans Pinstripe', sans-serif;
-    font-size: 2.5rem;
+    font-size: 4rem;
+    font-weight: 400;
     border-bottom: 2px solid #00bcd4;
 }
+
 h1 {
-    padding-top: 4rem;
+    padding-top: 2rem;
     color: #d4a200d3;
 }
 

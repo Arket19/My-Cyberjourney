@@ -1,10 +1,3 @@
-CSS writeups:
-    - intentar hacer un indice dinamico para los writeups
-    - hacer que el titulo de los writeups sea blanco, mas grande, con la letra bonita y el subrayado azul
-
-CSS general:    
-    - hacer que al cambiar de pagina las letras del menu no cambien de posicion
-
 Revisar:
     shocker
     bashed
@@ -22,7 +15,108 @@ Pagina Learning Journey
 
 
 
+CSS general:    
+    - hacer que al cambiar de pagina las letras del menu no cambien de posicion
 
+
+menu dinamico
+	    <script>
+        const indexContainer = document.querySelector('#index ul');
+        const headers = document.querySelectorAll('.content h1, .content h2');
+
+        headers.forEach((header, index) => {
+            const id = `section-${index}`;
+            header.id = id;
+
+            const li = document.createElement('li');
+            li.innerHTML = `<a href="#${id}">${header.textContent}</a>`;
+
+            if (header.tagName === 'H1') {
+                indexContainer.appendChild(li);
+                li.classList.add('has-children');
+            } else {
+                let parent = indexContainer.lastElementChild;
+                if (!parent.querySelector('ul')) {
+                    const subList = document.createElement('ul');
+                    parent.appendChild(subList);
+                }
+                parent.querySelector('ul').appendChild(li);
+            }
+        });
+
+         // Scrollspy para resaltar la sección activa
+         const observer = new IntersectionObserver(
+            (entries) => {
+                entries.forEach((entry) => {
+                    const id = entry.target.id;
+                    const link = document.querySelector(`aside ul li a[href="#${id}"]`);
+
+                    if (entry.isIntersecting) {
+                        document.querySelectorAll('aside ul li').forEach((li) => li.classList.remove('active'));
+                        link.parentElement.classList.add('active');
+                    }
+                });
+            },
+            { threshold: 0.5 } // Detectar cuando el 50% del encabezado está visible
+        );
+
+        headers.forEach((header) => {
+            observer.observe(header);
+        });
+
+        document.querySelector('aside ul li').classList.add('active');
+    </script>
+
+	
+aside {
+    position: fixed;
+    top: 8rem;
+    left: 15rem;
+    width: 200px;
+    color: white;
+    padding: 1rem 0;
+    padding-left: 1rem;
+    overflow-y: auto;
+    max-height: 80vh;
+    background-color: transparent;
+}
+
+aside ul {
+    list-style: none;
+    padding: 0;
+}
+
+aside ul li {
+    margin-bottom: 10px;
+    border-left: 3px solid transparent;
+    padding-left: 8px;
+}
+
+aside ul li.active {
+    border-left: 3px solid #00bcd4;
+}
+
+aside ul li ul {
+    display: none;
+    padding-left: 10px;
+}
+
+aside ul li.active ul {
+    display: block;
+}
+
+aside ul li a {
+    text-decoration: none;
+    color: white;
+    transition: color 0.3s;
+    font-family: 'Alumni Sans Pinstripe', sans-serif;
+    font-size: 1.5rem;
+    line-height: 1;
+}
+
+aside ul li.active a {
+    color: #00bcd4;
+}
 
 
 
