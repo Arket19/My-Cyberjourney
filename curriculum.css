@@ -59,29 +59,10 @@ nav ul li a {
     margin-left: auto;
     margin-right: auto;
     text-align: center;
-    width: 60%; /* Ocupa dos tercios */
+    width: 60%;
     color: white;
+    background-color: yellow;
 }
-
-.presentation h2 {
-    font-family: 'Alumni Sans Pinstripe', sans-serif;
-    font-size: 2.5rem;
-    border-bottom: 2px solid #00bcd4;
-    display: inline-block;
-    padding: 5px 10px;
-    margin: 0 auto; /* Centrarlo */
-}
-
-.presentation p {
-    margin-top: 20px;
-    line-height: 1.8;
-    text-align: justify;
-}
-
-
-
-
-
 
 
 /* Milestones y Next Steps */
@@ -89,28 +70,23 @@ nav ul li a {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
+    width: 50%;
     padding-top: 10rem;
-    gap: 20px;
+    background-color: red;  
 }
 
-.column {
-    width: 100rem;
-    background-color: rgb(224, 224, 224); /* Fondo blanco */
-    color: black; /* Texto negro */
-    padding: 20px;
-    border-radius: 5px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    max-width: 300px;
 
-}
 
-.titulos-milestones {
-    font-family: 'Alumni Sans Pinstripe', sans-serif;
-    font-size: 2rem;
-    margin-bottom: 10px;
-    height: 3rem;
-    font-weight: bolder;
-}
+
+
+
+
+
+
+
+
+
+
 
 /* Responsividad */
 @media screen and (max-width: 768px) {

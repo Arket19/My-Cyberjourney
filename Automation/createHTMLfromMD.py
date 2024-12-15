@@ -34,10 +34,10 @@ def generate_html(md_content, title):
             </div>
             <div class="w3-hide-small">
                 <ul class="elementos-menu">
-                    <li class="w3-bar-item"><a href="index.html">Home</a></li>
-                    <li class="w3-bar-item"><a href="curriculum/curriculum.html">Resume (CV)</a></li>
-                    <li class="w3-bar-item"><a href="writeups/writeups.html">Writeups</a></li>
-                    <li class="w3-bar-item"><a href="learning/learning.html">Learning Journey</a></li>
+                    <li class="w3-bar-item"><a href="../../index.html">Home</a></li>
+                    <li class="w3-bar-item"><a href="../../curriculum.html">Resume (CV)</a></li>
+                    <li class="w3-bar-item"><a href="../../writeups.html">Writeups</a></li>
+                    <li class="w3-bar-item"><a href="../../learning.html">Learning Journey</a></li>
                 </ul>
             </div>
         </nav> 

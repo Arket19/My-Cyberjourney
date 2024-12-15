@@ -1,66 +1,87 @@
-
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Bashed - My Cyberjourney</title>
-        <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
-        <link rel="preconnect" href="https://fonts.googleapis.com">
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link href="Bashed.css" rel="stylesheet">
-        <link href="https://fonts.googleapis.com/css2?family=Alumni+Sans+Pinstripe:ital@0;1&display=swap" rel="stylesheet">
-        <link href="https://fonts.googleapis.com/css2?family=Roboto+Serif:ital,opsz,wght@0,8..144,100..900;1,8..144,100..900&display=swap" rel="stylesheet">
-    </head>
-    <body>
-        <!-- Menú -->
-        <nav class="w3-bar">
-            <div class="logo">
-                <p>My Cyberjourney</p>
-            </div>
-            <div class="w3-bar-item w3-right w3-hide-large w3-hover-opacity" onclick="w3_open()">
-                <i class="fa fa-bars w3-xlarge"></i>
-            </div>
-            <div class="w3-hide-small">
-                <ul class="elementos-menu">
-                    <li class="w3-bar-item"><a href="index.html">Home</a></li>
-                    <li class="w3-bar-item"><a href="curriculum/curriculum.html">Resume (CV)</a></li>
-                    <li class="w3-bar-item"><a href="writeups/writeups.html">Writeups</a></li>
-                    <li class="w3-bar-item"><a href="learning/learning.html">Learning Journey</a></li>
-                </ul>
-            </div>
-        </nav> 
-        <div class="content">
-            <h1 class="title">EASY - BASHED</h1>
-<h1>1. Recon</h1>
-<h2>Nmap</h2>
-<p>To determine the target's operating system, I initiated a ping test. The Time-To-Live (TTL) value returned was 63, indicating it was a Linux system (TTL values around 128 typically suggest a Windows OS). Following this, I conducted an Nmap scan to identify active services on the target using the <code>-p-</code> flag to scan all ports. Since this is a Hack The Box machine, I optimized the scan for speed with the following flags:</p>
-<ul>
-<li><code>-min-rate 5000</code></li>
-<li><code>sS</code> (SYN scan)</li>
-<li><code>T5</code> (maximum speed)</li>
-</ul>
-<p><img alt="image.png" src="image.png" /></p>
-<p><img alt="image.png" src="image%201.png" /></p>
-<p>The scan revealed the following open ports:</p>
-<ul>
-<li><strong>HTTP</strong> on port 80</li>
-</ul>
-<p>Next, I performed a more detailed scan on port 80 with service version detection (<code>-sV</code>) and used the Nmap Scripting Engine (NSE) with default scripts (<code>-sC</code>). I saved the output for reference using the <code>-oN</code> flag.</p>
-<p><img alt="image.png" src="image%202.png" /></p>
-<h2>Website - TCP 80</h2>
-<p>After scanning for services, I utilized <code>whatweb</code> to identify the technologies used by the HTTP service. The web interface resembled a blog and displayed a tool called <strong>phpbash</strong>, which appeared to function as a web shell allowing command execution. There was an image where a directory path could be seen (<code>/uploads/phpbash.php</code>), but it was empty when accessed.</p>
-<p>Subsequently, I executed the following command to enumerate directories on the web server: <code>gobuster dir -u [http://10.10.10.68](http://10.10.10.68/) -w /usr/share/wordlists/dirb/common.txt -o results.txt -x html,php,py,conf,txt,log,xml,sh</code></p>
-<p><img alt="image.png" src="image%203.png" /></p>
-<p><img alt="image.png" src="image%204.png" /></p>
-<p>This revealed several directories, all of which were empty or contained files that were not useful for further access, except for the <code>/dev/</code> directory which contained. I tested command execution and confirmed it ran under the <code>www-data</code> user. I then attempted to send a TCP reverse shell to my machine, which succeeded after URL encoding the <code>&amp;</code> symbols (%26)</p>
-<p><img alt="image.png" src="image%205.png" /></p>
-<h1>2. Gaining Access</h1>
-<p>I visited all of them and they all were empty or had files that I couldn’t use to gain access to the system. All but the <code>/dev/</code> directory, which had the already mentioned tool <code>phpbash</code>. I tried writing commands and I found it ran them as the <code>www-data</code> user. So I tried sending a TCP revershe shell to my own system which finally worked when I URL encoded the &amp;’s (%26).</p>
-<p><img alt="image.png" src="image%206.png" /></p>
-<p><img alt="image.png" src="image%207.png" /></p>
-<p>After gaining access to the system, I spawned a fully upgraded TTY to maintain the connection more effectively. This was accomplished using the following commands:</p>
-<p><code>python
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bashed - My Cyberjourney</title>
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="Bashed.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Alumni+Sans+Pinstripe:ital@0;1&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Roboto+Serif:ital,opsz,wght@0,8..144,100..900;1,8..144,100..900&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <!-- Menú -->
+    <nav class="w3-bar">
+        <div class="logo">
+            <p>My Cyberjourney</p>
+        </div>
+        <div class="w3-bar-item w3-right w3-hide-large w3-hover-opacity" onclick="w3_open()">
+            <i class="fa fa-bars w3-xlarge"></i>
+        </div>
+        <div class="w3-hide-small">
+            <ul class="elementos-menu">
+                <li class="w3-bar-item"><a href="../../index.html">Home</a></li>
+                <li class="w3-bar-item"><a href="../../curriculum.html">Resume (CV)</a></li>
+                <li class="w3-bar-item"><a href="../../writeups.html">Writeups</a></li>
+                <li class="w3-bar-item"><a href="../../learning.html">Learning Journey</a></li>
+            </ul>
+        </div>
+    </nav>
+    <div class="content">
+        <h1 class="title">EASY - BASHED</h1>
+        <h1>1. Recon</h1>
+        <h2>Nmap</h2>
+        <p>To determine the target's operating system, I initiated a ping test. The Time-To-Live (TTL) value returned
+            was 63, indicating it was a Linux system (TTL values around 128 typically suggest a Windows OS). Following
+            this, I conducted an Nmap scan to identify active services on the target using the <code>-p-</code> flag to
+            scan all ports. Since this is a Hack The Box machine, I optimized the scan for speed with the following
+            flags:</p>
+        <ul>
+            <li><code>-min-rate 5000</code></li>
+            <li><code>sS</code> (SYN scan)</li>
+            <li><code>T5</code> (maximum speed)</li>
+        </ul>
+        <p><img alt="image.png" src="image.png" /></p>
+        <p><img alt="image.png" src="image%201.png" /></p>
+        <p>The scan revealed the following open ports:</p>
+        <ul>
+            <li><strong>HTTP</strong> on port 80</li>
+        </ul>
+        <p>Next, I performed a more detailed scan on port 80 with service version detection (<code>-sV</code>) and used
+            the Nmap Scripting Engine (NSE) with default scripts (<code>-sC</code>). I saved the output for reference
+            using the <code>-oN</code> flag.</p>
+        <p><img alt="image.png" src="image%202.png" /></p>
+        <h2>Website - TCP 80</h2>
+        <p>After scanning for services, I utilized <code>whatweb</code> to identify the technologies used by the HTTP
+            service. The web interface resembled a blog and displayed a tool called <strong>phpbash</strong>, which
+            appeared to function as a web shell allowing command execution. There was an image where a directory path
+            could be seen (<code>/uploads/phpbash.php</code>), but it was empty when accessed.</p>
+        <p>Subsequently, I executed the following command to enumerate directories on the web server:
+            <code>gobuster dir -u [http://10.10.10.68](http://10.10.10.68/) -w /usr/share/wordlists/dirb/common.txt -o results.txt -x html,php,py,conf,txt,log,xml,sh</code>
+        </p>
+        <p><img alt="image.png" src="image%203.png" /></p>
+        <p><img alt="image.png" src="image%204.png" /></p>
+        <p>This revealed several directories, all of which were empty or contained files that were not useful for
+            further access, except for the <code>/dev/</code> directory which contained. I tested command execution and
+            confirmed it ran under the <code>www-data</code> user. I then attempted to send a TCP reverse shell to my
+            machine, which succeeded after URL encoding the <code>&amp;</code> symbols (%26)</p>
+        <p><img alt="image.png" src="image%205.png" /></p>
+        <h1>2. Gaining Access</h1>
+        <p>I visited all of them and they all were empty or had files that I couldn’t use to gain access to the system.
+            All but the <code>/dev/</code> directory, which had the already mentioned tool <code>phpbash</code>. I tried
+            writing commands and I found it ran them as the <code>www-data</code> user. So I tried sending a TCP
+            revershe shell to my own system which finally worked when I URL encoded the &amp;’s (%26).</p>
+        <p><img alt="image.png" src="image%206.png" /></p>
+        <p><img alt="image.png" src="image%207.png" /></p>
+        <p>After gaining access to the system, I spawned a fully upgraded TTY to maintain the connection more
+            effectively. This was accomplished using the following commands:</p>
+        <p><code>python
 script /dev/null -c bash #Starts a new shell session without logging.
 ^Z #Pauses the new shell.
 stty raw -echo;fg #Sets the terminal to raw mode, unsets echoing, and then brings the shell back.
@@ -69,23 +90,31 @@ xterm #Sets the terminal type.
 export TERM=xterm #Definition of necessary environment variables.
 export SHELL=bash
 stty rows 59 columns 116 #Definition of the window size.</code></p>
-<p><img alt="image.png" src="image%208.png" /></p>
-<p>With a stable TTY, I navigated to retrieve the user flag and then checked the sudo permissions. I discovered that I could execute commands as the user <code>scriptmanager</code>, prompting me to start a shell as that user.</p>
-<p><img alt="image.png" src="image%209.png" /></p>
-<p><img alt="image.png" src="image%2010.png" /></p>
-<h1>3. Privilege Escalation</h1>
-<h2>Root</h2>
-<p>After switching users, I downloaded <strong>pspy</strong> to monitor the running processes. After observing for a while, I noted that the file <code>test.py</code> was executed periodically.</p>
-<p><img alt="image.png" src="image%2011.png" /></p>
-<p><img alt="image.png" src="image%2012.png" /></p>
-<p>I located <code>test.py</code> by following its path to the <code>/scripts/</code> directory. Upon listing its contents, I found that the user <code>scriptmanager</code> owned <code>test.py</code>, which meant I could modify its contents to execute arbitrary commands as the user running it (UID=0, root).</p>
-<p><img alt="image.png" src="image%2013.png" /></p>
-<p><img alt="image.png" src="image%2014.png" /></p>
-<p>To exploit this, I edited <code>test.py</code> to change the permissions of <code>/bin/bash</code> when the script was executed. This modification allowed me to run <strong>bash</strong> as its owner (root) after the next execution of <code>test.py</code>.</p>
-<p><img alt="image.png" src="image%2015.png" /></p>
-<p><img alt="image.png" src="image%2016.png" /></p>
-<p>Finally, I was able to access the <code>root</code> user and capture the root flag.</p>
-<p><img alt="image.png" src="image%2017.png" /></p>
-        </div>
-    </body>
+        <p><img alt="image.png" src="image%208.png" /></p>
+        <p>With a stable TTY, I navigated to retrieve the user flag and then checked the sudo permissions. I discovered
+            that I could execute commands as the user <code>scriptmanager</code>, prompting me to start a shell as that
+            user.</p>
+        <p><img alt="image.png" src="image%209.png" /></p>
+        <p><img alt="image.png" src="image%2010.png" /></p>
+        <h1>3. Privilege Escalation</h1>
+        <h2>Root</h2>
+        <p>After switching users, I downloaded <strong>pspy</strong> to monitor the running processes. After observing
+            for a while, I noted that the file <code>test.py</code> was executed periodically.</p>
+        <p><img alt="image.png" src="image%2011.png" /></p>
+        <p><img alt="image.png" src="image%2012.png" /></p>
+        <p>I located <code>test.py</code> by following its path to the <code>/scripts/</code> directory. Upon listing
+            its contents, I found that the user <code>scriptmanager</code> owned <code>test.py</code>, which meant I
+            could modify its contents to execute arbitrary commands as the user running it (UID=0, root).</p>
+        <p><img alt="image.png" src="image%2013.png" /></p>
+        <p><img alt="image.png" src="image%2014.png" /></p>
+        <p>To exploit this, I edited <code>test.py</code> to change the permissions of <code>/bin/bash</code> when the
+            script was executed. This modification allowed me to run <strong>bash</strong> as its owner (root) after the
+            next execution of <code>test.py</code>.</p>
+        <p><img alt="image.png" src="image%2015.png" /></p>
+        <p><img alt="image.png" src="image%2016.png" /></p>
+        <p>Finally, I was able to access the <code>root</code> user and capture the root flag.</p>
+        <p><img alt="image.png" src="image%2017.png" /></p>
+    </div>
+</body>
+
 </html>
