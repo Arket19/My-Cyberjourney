@@ -1,0 +1,60 @@
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Blue - My Cyberjourney</title>
+        <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="Blue.css" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Alumni+Sans+Pinstripe:ital@0;1&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Roboto+Serif:ital,opsz,wght@0,8..144,100..900;1,8..144,100..900&display=swap" rel="stylesheet">
+    </head>
+    <body>
+        <!-- Menú -->
+        <nav class="w3-bar">
+            <div class="logo">
+                <p>My Cyberjourney</p>
+            </div>
+            <div class="w3-bar-item w3-right w3-hide-large w3-hover-opacity" onclick="w3_open()">
+                <i class="fa fa-bars w3-xlarge"></i>
+            </div>
+            <div class="w3-hide-small">
+                <ul class="elementos-menu">
+                    <li class="w3-bar-item"><a href="../../index.html">Home</a></li>
+                    <li class="w3-bar-item"><a href="../../curriculum.html">Resume (CV)</a></li>
+                    <li class="w3-bar-item"><a href="../../writeups.html">Writeups</a></li>
+                    <li class="w3-bar-item"><a href="../../learning.html">Learning Journey</a></li>
+                </ul>
+            </div>
+        </nav> 
+        <div class="content">
+            <h1 class="title">EASY-BLUE</h1>
+<h1><strong>1. Recon</strong></h1>
+<h2>Nmap</h2>
+<p><code>nmap</code> finds nine open ports: RPC (135), NetBios (139), SMB (445) and six unknown services.</p>
+<p><img alt="image.png" src="image.png" /></p>
+<p>The NSE (Nmap Scripting Engine) finds the following information:</p>
+<ul>
+<li>The box is using Windows 7 Professional 6.1</li>
+<li>The Microsoft RPC service is running on ports 135, 49152, 49153, 49154, 49155, 49156, 49157</li>
+<li>The computer name and NetBios name are haris-pc and HRIS-PC\x00 respectively</li>
+</ul>
+<p><img alt="image.png" src="image%201.png" /></p>
+<h2>SMB - TCP 445</h2>
+<p>As the running OS is Windows 7, the first thing to be checked is if it is vulnerable to <code>EternalBlue</code>. I will use <code>nmap</code> to look for vulnerabilities in the <code>SMB</code> service. After a few moments the results are ready and I can see that this service is vulnerable to <code>ms17-010 (EternalBlue)</code></p>
+<p><img alt="image.png" src="image%202.png" /></p>
+<h1><strong>2. Gaining Access</strong></h1>
+<p>To exploit this vulnerability I always like using the tools in this <a href="https://github.com/worawit/MS17-010">Github repository</a>. Running the <code>checker</code> will confirm that the service is vulnerable as there is one or more OK’s.  </p>
+<p><img alt="image.png" src="image%203.png" /></p>
+<p>To exploit it, I will modify the <code>zzz_exploit.py</code> file adding <code>guest</code> in the <code>username</code> field, commenting the <code>pwned.txt</code> file creation and uncommenting the <code>service_exec</code> line. I will also modify that line to make the target connect to a <code>smb</code> share I will be hosting and which will contain a <code>reverse.exe</code>(which is a copy of <code>nc64.exe</code> from <a href="https://eternallybored.org/misc/netcat/">netcat</a>) file which will make the target send a reverse shell to the <code>netcat</code> listener I will set up before running the exploit. </p>
+<p><img alt="image.png" src="image%204.png" /></p>
+<p>Setting up a <code>smb</code> server with <code>impacket</code>, a <code>netcat</code> listener, and then run the exploit, will result in the spawn of a shell with root permissions in the <code>netcat</code> listener.</p>
+<p><img alt="image.png" src="image%205.png" /></p>
+<p><img alt="image.png" src="image%206.png" /></p>
+<p><img alt="image.png" src="image%207.png" /></p>
+        </div>
+    </body>
+</html>

@@ -1,5 +1,15 @@
 [
     {
+        "title": "HTB: Blue",
+        "url": "writeups/Blue/Blue.html",
+        "tags": [
+            "HTB",
+            "Windows",
+            "EternalBlue"
+        ],
+        "date": "26/12/2024"
+    },
+    {
         "title": "HTB: Sneakymailer",
         "url": "writeups/Sneakymailer/Sneakymailer.html",
         "tags": [
