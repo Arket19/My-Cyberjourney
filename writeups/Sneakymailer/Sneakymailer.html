@@ -1,0 +1,118 @@
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Sneakymailer - My Cyberjourney</title>
+        <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="Sneakymailer.css" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Alumni+Sans+Pinstripe:ital@0;1&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Roboto+Serif:ital,opsz,wght@0,8..144,100..900;1,8..144,100..900&display=swap" rel="stylesheet">
+    </head>
+    <body>
+        <!-- Menú -->
+        <nav class="w3-bar">
+            <div class="logo">
+                <p>My Cyberjourney</p>
+            </div>
+            <div class="w3-bar-item w3-right w3-hide-large w3-hover-opacity" onclick="w3_open()">
+                <i class="fa fa-bars w3-xlarge"></i>
+            </div>
+            <div class="w3-hide-small">
+                <ul class="elementos-menu">
+                    <li class="w3-bar-item"><a href="index.html">Home</a></li>
+                    <li class="w3-bar-item"><a href="curriculum/curriculum.html">Resume (CV)</a></li>
+                    <li class="w3-bar-item"><a href="writeups/writeups.html">Writeups</a></li>
+                    <li class="w3-bar-item"><a href="learning/learning.html">Learning Journey</a></li>
+                </ul>
+            </div>
+        </nav> 
+        <div class="content">
+            <h1 class="title">MEDIUM - SNEAKYMAILER</h1>
+<h1><strong>1. Recon</strong></h1>
+<h2>Nmap</h2>
+<p><code>nmap</code> finds seven open ports: FTP (21), SSH (22), SMTP (25), HTTP (80 &amp; 8080) and Imap (143 &amp; 993).</p>
+<p><img alt="image.png" src="image.png" /></p>
+<p>The NSE (Nmap Scripting Engine) finds the following information:</p>
+<ul>
+<li>The box is using Debian</li>
+<li>The version of the vsftpd service is  3.0.3</li>
+<li>The version of the OpenSSH service is 7.9p1</li>
+<li>Both HTTP services use nginx 1.14.2</li>
+</ul>
+<p><img alt="image.png" src="image%201.png" /></p>
+<hr />
+<h2>FTP - TCP 21</h2>
+<p>The FTP service does not allow <code>anonymous</code> login and does not seem to be vulnerable to anything else than Denial of Service attacks.</p>
+<p><img alt="image.png" src="image%202.png" /></p>
+<hr />
+<h2>Website - TCP 80</h2>
+<p>Visiting <code>http://10.10.10.197/</code> automatically redirects to <code>http://sneakycorp.htb</code>. I will add it to <code>/etc/hosts</code> and try finding subdomains. To achieve that I will try doing a DNS zone transfer with <code>dig</code> and bruteforce subdomains with <code>wfuzz</code>. The fuzzing application finds the subdomain <code>dev</code>. I will add it to <code>/etc/hosts</code> as well.</p>
+<p><img alt="image.png" src="image%203.png" /></p>
+<p><img alt="image.png" src="image%204.png" /></p>
+<p>Having added the domain to <code>/etc/hosts</code> now visiting the website shows a employee dashboard. There is a message saying that emails should be checked as further instructions to register an account are given. The <code>Team</code> tab shows a list of users and their emails. These emails have a different domain so I will add it to <code>/etc/hosts</code> too. </p>
+<p><img alt="image.png" src="image%205.png" /></p>
+<p><img alt="image.png" src="image%206.png" /></p>
+<p>I will try finding subdomains for <code>sneakymailer.htb</code> again the same way I did before with <code>dig</code> and <code>wfuzz</code>. No results were retrieved this time.</p>
+<p><img alt="image.png" src="image%207.png" /></p>
+<p><img alt="image.png" src="image%208.png" /></p>
+<p>As nothing seems exploitable here I will try finding hidden directories and files with <code>gobuster</code>. However, no interesting results are found.</p>
+<p><img alt="image.png" src="image%209.png" /></p>
+<p>Inspecting the source code, I have found a comment which mentions the existence of <code>/pypi/register.php</code>. Visiting it a user creation form is shown. Filling it and trying to create an account doesn’t seem to work. As we read in the <code>Dashboard</code> tab, further instructions about this form were sent via email. Fuzzing the <code>pypi</code> directory with <code>gobuster</code> doesn’t find anything else than <code>register.php</code>.</p>
+<p><img alt="image.png" src="image%2010.png" /></p>
+<p><img alt="image.png" src="8ac14d17-0d8e-47d0-8661-96f38111aaac.png" /></p>
+<hr />
+<h2>Website - TCP 8080</h2>
+<p>Connecting to <code>http://10.10.10.197:8080/</code> shows the default nginx site. Trying to bruteforce hidden directories with <code>gobuster</code> won’t retrieve anything else than the <code>index</code>.</p>
+<p><img alt="image.png" src="image%2011.png" /></p>
+<hr />
+<h1><strong>2. Gaining Access</strong></h1>
+<p>The hint about checking the emails and the lack of vulnerabilities in the web services leads me to think that I should try reading emails. Although I have no credentials yet, I have a list of emails. I will try throwing a phising campaign with <code>swaks</code> to see if I get back any kind of information. The first step is getting the list of emails with a quick python script that prints all the emails separated by commas.</p>
+<p><img alt="image.png" src="image%2012.png" /></p>
+<p><img alt="image.png" src="image%2013.png" /></p>
+<p>Now I can use the output of this script to send an email to each one of them with <code>swaks</code>. I will put in the body of the message a link to a <code>netcat</code> listener I have started in my kali to get the response in case there is one. After a few moments a POST request is received. It contains some parameters, including an email ( <code>paulbyrd@sneakymailer.htb</code> ) and an encrypted password. <code>^(#J@SkFv2[%KhIxKk(Ju</code>hqcHl&lt;:Ht`</p>
+<p><img alt="image.png" src="image%2014.png" /></p>
+<p><img alt="image.png" src="image%2015.png" /></p>
+<p><code>CyberChef</code> can be used to decode the password using <code>URL Decode</code> and From <code>Base64</code>. </p>
+<p><img alt="image.png" src="7e618bda-90b1-408f-a30e-2f078ba7453a.png" /></p>
+<p><img alt="image.png" src="b56f3dd2-e6e8-40e5-82de-5392a6364bbd.png" /></p>
+<p>I will connect to the <code>IMAP</code> service (port 143) and use the credentials I have found to log in. No inbox but <code>INBOX.Sent Items</code> has any existing emails. Checking on those two emails I have found <code>developer:m^AsY7vTKVT+dV1{WOU%@NaHkUAId3]C</code> </p>
+<p><img alt="image.png" src="image%2016.png" /></p>
+<p><img alt="image.png" src="image%2017.png" /></p>
+<p><img alt="image.png" src="image%2018.png" /></p>
+<p>After using those credentials to try logging into the target via <code>SSH</code> and failing, I have tried them on the <code>FTP</code> service and succeeded. A directory called <code>dev</code> with the content of the website can be found inside. I have downloaded and inspected it but it didn’t have any useful information.  </p>
+<p><img alt="image.png" src="image%2019.png" /></p>
+<p><img alt="image.png" src="91ff61ab-3f93-4fca-a356-fbd7375d5716.png" /></p>
+<p>After some time I have realised that I have permissions to upload files to the <code>FTP</code> so I have put a reverse shell into the <code>dev</code> directory and triggered it visiting <code>http://dev.sneakycorp.htb/reverse.php</code>. This has spawned a shell as <code>www-data</code> in my <code>netcat</code> listener and thus given me access to the target.</p>
+<p><img alt="image.png" src="image%2020.png" /></p>
+<p><img alt="image.png" src="image%2021.png" /></p>
+<h1><strong>3. Privilege Escalation</strong></h1>
+<h2>Low</h2>
+<p>After a while looking for something vulnerable I have found the file <code>.htpasswd</code> which contains a hash. I will try to crack it with <code>john</code> using the wordlist <code>rockyou.txt</code>. A few moments later it gets the password <code>soufianeelhaoui</code>. This password doesn’t work to log in as <code>low</code>, <code>vmail</code> or <code>root</code>.</p>
+<p><img alt="image.png" src="image%2022.png" /></p>
+<p><img alt="image.png" src="image%2023.png" /></p>
+<p>Looking the <code>/etc/passwd</code> I have found that <code>pypi</code> is a user of the system so I have looked for processes it may be running. One result is shown using <code>ps aux | grep pypi</code> and it is a <code>pypi-server</code> instance running in the port 5000.</p>
+<p><img alt="image.png" src="image%2024.png" /></p>
+<p>I have noticed its location is <code>/var/www/pypi.sneakycorp.htb/</code> so iḿ goin to check the available sites list to see how that subdomain is configured. It looks like any requests made to the <code>http</code> service running on port <code>8080</code> are being redirected to the <code>localhost</code> port <code>5000</code>. </p>
+<p><img alt="image.png" src="image%2025.png" /></p>
+<p>This means that connecting to <code>http://pypi.sneakycorp.htb:8080/</code> should redirect me to the <code>pypi</code> server. Some instructions on how to install packages are shown. Clicking the link to the <code>package index</code> spawns a form which can be filled with <code>pypi:soufianeelhaoui</code> to get access, but it is empty. </p>
+<p><img alt="image.png" src="image%2026.png" /></p>
+<p>Following <a href="https://www.linode.com/docs/guides/how-to-create-a-private-python-package-repository/">this tutorial</a> I have managed to create and install a <code>pypi</code> package which sends a reverse shell to my kali. The firs step is creating the files and directories where the package will be configured. It will look something like this:</p>
+<p><img alt="image.png" src="image%2027.png" /></p>
+<p>Then the <code>setup.py</code> content has to be defined. This is where I have put the reverse shell for the server to execute it and send a shell to my kali. Once that is done, it is time to send the package to the <code>pypi</code> server. This can be done by editing the file <code>~/.pypirc</code> to set up the host and the credentials.</p>
+<p><img alt="image.png" src="image%2028.png" /></p>
+<p><img alt="image.png" src="image%2029.png" /></p>
+<p>After everything is configured, now I can execute the command to create and upload the package and the reverse shell will be sent to my <code>netcat</code> listener. NOTE: A reverse shell is sent first from the device where the command is executed (from my kali in this case) and after that is done, another reverse shell will be sent from the server where the package is being installed. This meanst that I have set up a <code>netcat</code> listener, then I have run <code>setup.py</code>, then I have set up another <code>netcat</code> listener and then I have killed the shell which had spawned in the first <code>netcat</code> listener. That way, the second listener will get the reverse shell sent by the target.</p>
+<p><img alt="image.png" src="image%2030.png" /></p>
+<p><img alt="image.png" src="image%2031.png" /></p>
+<h2>Root</h2>
+<p>Checking the sudo permissions for <code>low</code> I can see that I can use <code>pip3</code> with sudo permissions. After checking in <code>gtfobins</code> how to use <code>pip</code> to escalate privileges, I have run the suggested commands and spawned a shell with <code>root</code> permissions. Now I can retrieve the flags and submit them.</p>
+<p><img alt="image.png" src="image%2032.png" /></p>
+<p><img alt="image.png" src="image%2033.png" /></p>
+<p><img alt="image.png" src="image%2034.png" /></p>
+        </div>
+    </body>
+</html>

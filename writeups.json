@@ -1,9 +1,25 @@
 [
     {
+        "title": "HTB: Sneakymailer",
+        "url": "writeups/Sneakymailer/Sneakymailer.html",
+        "tags": [
+            "Imap",
+            "FTP",
+            "Phising",
+            "Pypi",
+            "HTB",
+            "Linux",
+            "Sudo"
+        ],
+        "date": "26/12/2024"
+    },
+    {
         "title": "HTB: Doctor",
         "url": "writeups/Doctor/Doctor.html",
         "tags": [
             "Splunk",
+            "HTB",
+            "Linux",
             "SSTI",
             "Logs"
         ],
@@ -15,6 +31,8 @@
         "tags": [
             "LFI",
             "Tomcat",
+            "HTB",
+            "Linux",
             "File Upload",
             "Lxc/Lxd",
             "Docker"
@@ -26,6 +44,8 @@
         "url": "writeups/Valentine/Valentine.html",
         "tags": [
             "Heartbleed",
+            "HTB",
+            "Linux",
             "SSL",
             "Tmux"
         ],
@@ -36,7 +56,8 @@
         "url": "writeups/Solidstate/Solidstate.html",
         "tags": [
             "RSIP",
-            "Default Creds",
+            "HTB",
+            "Linux",
             "JAMES",
             "SSH",
             "POP3",
@@ -50,6 +71,8 @@
         "url": "writeups/Sense/Sense.html",
         "tags": [
             "Command Injection",
+            "HTB",
+            "Linux",
             "PfSense"
         ],
         "date": "11/11/2024"
@@ -59,6 +82,8 @@
         "url": "writeups/Cronos/Cronos.html",
         "tags": [
             "DNS",
+            "HTB",
+            "Linux",
             "Zone Transfer",
             "SQL Injection",
             "Command Execution",
@@ -71,6 +96,8 @@
         "url": "writeups/Nibbles/Nibbles.html",
         "tags": [
             "SQL Injection",
+            "HTB",
+            "Linux",
             "Nibbleblog",
             "File Upload",
             "Sudo"
@@ -82,6 +109,8 @@
         "url": "writeups/Bashed/Bashed.html",
         "tags": [
             "Command Execution",
+            "HTB",
+            "Linux",
             "Cron"
         ],
         "date": "30/09/2024"
@@ -91,6 +120,8 @@
         "url": "writeups/Shocker/Shocker.html",
         "tags": [
             "Shellshock",
+            "HTB",
+            "Linux",
             "Sudo"
         ],
         "date": "25/09/2024"
@@ -100,6 +131,8 @@
         "url": "writeups/Openadmin/Openadmin.html",
         "tags": [
             "OpenNetAdmin",
+            "HTB",
+            "Linux",
             "SSH",
             "Sudo"
         ],
@@ -110,9 +143,10 @@
         "url": "writeups/Lame/Lame.html",
         "tags": [
             "Distcc",
+            "HTB",
+            "Linux",
             "Samba"
         ],
         "date": "08/07/2024"
     }
-
 ]
