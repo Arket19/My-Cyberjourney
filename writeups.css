@@ -1,24 +1,26 @@
+html {
+    overflow-y: scroll;
+  }
+
 /* General */
 body {
     font-family: 'Roboto Serif', serif;
-    background-color: #222222; /* Fondo negro */
-    color: white; /* Texto claro */
+    background-color: #222222; 
+    color: white; 
     margin: 0;
     padding: 0;
 }
 
 
 
-
-
 /* Barra de navegación */
 nav {
-    background-color: #333; /* Color de fondo del menú */
+    background-color: #333; 
     color: white;
-    padding: 5px 10px; /* Menor altura */
+    padding: 5px 10px; 
     display: flex;
     justify-content: space-between;
-    align-items: center; /* Centrar verticalmente */
+    align-items: center; 
     height: 5rem;
     position: fixed; 
     top: 0; 
@@ -28,7 +30,7 @@ nav {
 }
 
 nav .logo a {
-    font-family: 'Alumni Sans Pinstripe', sans-serif;
+    font-family: 'Roboto', sans-serif;
     font-size: 1.8rem;
     font-weight: bold;
     text-decoration: none;
@@ -55,29 +57,26 @@ nav ul li a {
 
 
 
-
-
-
 /* Presentación */
-.title{
+.presentation {
     margin-top: 8rem;
     margin-left: auto;
     margin-right: auto;
     text-align: center;
-    width: 60%; /* Ocupa dos tercios */
+    width: 60%; 
     color: white;
 }
 
-.title h2 {
+.presentation h2 {
     font-family: 'Alumni Sans Pinstripe', sans-serif;
     font-size: 2.5rem;
     border-bottom: 2px solid #00bcd4;
     display: inline-block;
     padding: 5px 10px;
-    margin: 0 auto; /* Centrarlo */
+    margin: 0 auto; 
 }
 
-.title p {
+.presentation p {
     margin-top: 20px;
     line-height: 1.8;
     text-align: justify;
@@ -92,7 +91,7 @@ nav ul li a {
     margin-left: auto;
     margin-right: auto;
     text-align: center;
-    width: 60%; /* Ocupa dos tercios */
+    width: 60%; 
     border-bottom: #0097a7;
 }
 .w3-bar-item {
@@ -103,10 +102,6 @@ nav ul li a {
     padding: 10px;
 }
 
-.w3-bar-item:hover {
-    background-color: #00bcd4;
-    color: black;
-}
 
 
 
@@ -129,10 +124,10 @@ nav ul li a {
 /* Cuadrados del listado */
 .writeup-item {
     display: flex;
-    flex-direction: column; /* Asegura que el contenido esté en una columna */
-    justify-content: space-between; /* Deja espacio entre etiquetas y fecha */
-    background-color: rgb(224, 224, 224); /* Fondo blanco */
-    color: black; /* Texto negro */
+    flex-direction: column; 
+    justify-content: space-between; 
+    background-color: rgb(224, 224, 224); 
+    color: black; 
     margin: 20px;
     padding: 20px;
     border-radius: 5px;
@@ -171,24 +166,24 @@ nav ul li a {
 .writeup-item span {
     font-size: 0.8rem;
     margin: 2px;
-    display: inline-block; /* Etiquetas alineadas */
+    display: inline-block; 
     padding: 5px 8px;
-    background-color: #4caf50; /* Fondo verde */
+    background-color: #4caf50;
     color: white;
     border-radius: 3px;
 }
 
 /* Fecha */
 .writeup-item .fecha {
-    margin-top: auto; /* Empuja la fecha hacia la parte inferior */
+    margin-top: auto; 
     font-size: 0.9rem;
     color: white;
-    text-align: right; /* Alinea la fecha a la derecha */
+    text-align: right; 
 }
 
 .w3-bar-item.w3-button.active {
-    background-color: white; /* Fondo blanco para los botones activos */
-    color: black; /* Texto negro para contraste */
+    background-color: white; 
+    color: black; 
 }
 
 

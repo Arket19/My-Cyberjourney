@@ -35,7 +35,6 @@ def generate_html(md_content, title):
             <div class="w3-hide-small">
                 <ul class="elementos-menu">
                     <li class="w3-bar-item"><a href="../../index.html">Home</a></li>
-                    <li class="w3-bar-item"><a href="../../curriculum.html">Resume (CV)</a></li>
                     <li class="w3-bar-item"><a href="../../writeups.html">Writeups</a></li>
                     <li class="w3-bar-item"><a href="../../learning.html">Learning Journey</a></li>
                 </ul>
@@ -156,9 +155,7 @@ def process_zip_files():
 body {
     font-family: 'Roboto Serif', serif;
     background-color: #222222;
-    /* Fondo negro */
     color: white;
-    /* Texto claro */
     margin: 0;
     padding: 0;
     line-height: 1.7;
@@ -181,6 +178,7 @@ nav {
 }
 
 nav .logo a {
+    font-family: 'Roboto', sans-serif;
     font-size: 1.8rem;
     font-weight: bold;
     text-decoration: none;
@@ -243,10 +241,6 @@ li {
 a {
     color: rgb(0, 128, 128);
     text-decoration: none;
-}
-
-a:hover {
-    text-decoration: underline;
 }
 
 pre {

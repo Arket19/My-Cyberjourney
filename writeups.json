@@ -1,5 +1,18 @@
 [
     {
+        "title": "HTB: Passage",
+        "url": "writeups/Passage/Passage.html",
+        "tags": [
+            "HTB",
+            "Linux",
+            "CuteNews",
+            "SSH",
+            "File Upload",
+            "USBcreator"
+        ],
+        "date": "15/01/2025"
+    },
+    {
         "title": "HTB: Blue",
         "url": "writeups/Blue/Blue.html",
         "tags": [

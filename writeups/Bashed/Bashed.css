@@ -3,9 +3,7 @@
 body {
     font-family: 'Roboto Serif', serif;
     background-color: #222222;
-    /* Fondo negro */
     color: white;
-    /* Texto claro */
     margin: 0;
     padding: 0;
     line-height: 1.7;
@@ -92,9 +90,6 @@ a {
     text-decoration: none;
 }
 
-a:hover {
-    text-decoration: underline;
-}
 
 pre {
     background-color: #1e1e1e;

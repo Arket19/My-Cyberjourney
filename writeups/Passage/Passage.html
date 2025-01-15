@@ -1,0 +1,81 @@
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Passage - My Cyberjourney</title>
+        <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="Passage.css" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Alumni+Sans+Pinstripe:ital@0;1&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Roboto+Serif:ital,opsz,wght@0,8..144,100..900;1,8..144,100..900&display=swap" rel="stylesheet">
+    </head>
+    <body>
+        <!-- Menú -->
+        <nav class="w3-bar">
+            <div class="logo">
+                <p>My Cyberjourney</p>
+            </div>
+            <div class="w3-bar-item w3-right w3-hide-large w3-hover-opacity" onclick="w3_open()">
+                <i class="fa fa-bars w3-xlarge"></i>
+            </div>
+            <div class="w3-hide-small">
+                <ul class="elementos-menu">
+                    <li class="w3-bar-item"><a href="../../index.html">Home</a></li>
+                    <li class="w3-bar-item"><a href="../../writeups.html">Writeups</a></li>
+                    <li class="w3-bar-item"><a href="../../learning.html">Learning Journey</a></li>
+                </ul>
+            </div>
+        </nav> 
+        <div class="content">
+            <h1 class="title">MEDIUM - PASSAGE</h1>
+<h1><strong>1. Recon</strong></h1>
+<h2>Nmap</h2>
+<p><code>nmap</code> finds two open ports: SSH (22) and HTTP (80). </p>
+<p><img alt="image.png" src="image.png" /></p>
+<p>The NSE (Nmap Scripting Engine) finds the following information:</p>
+<ul>
+<li>The box is using Ubuntu</li>
+<li>The version of the SSH service is 7.2p2</li>
+<li>The port 80 HTTP server is using Apache 2.4.18 and the title suggests it is a news website.</li>
+</ul>
+<p><img alt="image.png" src="image%201.png" /></p>
+<h2>Website - TCP 80</h2>
+<p>Visiting <code>http://10.10.10.206/</code> a website with news is shown. </p>
+<p>Running <code>gobuster</code> to find hidden files and directories will quickly start throwing errors. This is related to the first entry of the webpage which says ‘Implemented <code>Fail2Ban</code>’. This is a daemon which monitors the logs and bans clients that make a lot of bad requests. It can be configured to protect a website against enumeration and brute force attacks among others. </p>
+<p><img alt="image.png" src="image%202.png" /></p>
+<h1><strong>2. Gaining Access</strong></h1>
+<p>At the bottom of the page there is a footer which says ‘Powered by <code>CuteNews</code>’. This technology is a news management system which belongs to <a href="https://cutephp.com/">CutePHP</a>. Looking up ‘CuteNews exploits’ I have discovered a few which seem interesting. The first one is a <a href="https://www.exploit-db.com/exploits/48800">Remote Code Execution exploit</a>. While reading it, I have learnt that there should be a <code>lines</code> file which contains information about registered users in <code>{ip}/CuteNews/cdata/users/lines</code>, so following that url I get some <code>base64</code> encoded strings. </p>
+<p><img alt="image.png" src="image%203.png" /></p>
+<p>I will write a quick <code>bash</code> script to save and decode the information. Running it prints the decoded information and although it is a bit difficult to read, some usernames, emails and hashed passwords can be retrieved from it. Using <a href="https://crackstation.net/">CrackStation</a> two passwords are found. The found usernames are: <code>admin,</code> <code>sid-meier</code>, <code>paul-coles</code>, <code>egre55</code> and <code>kim-swift</code>. The found credentials are <code>egre55:egre55</code> and <code>paul-coles:atlanta1</code>. Both are valid to log in.</p>
+<p><img alt="image.png" src="image%204.png" /></p>
+<p><img alt="image.png" src="image%205.png" /></p>
+<p><img alt="image.png" src="image%206.png" /></p>
+<p>Once I hace access to a user, I can visit the edit <code>Personal Options</code> section and upload a <code>php</code> reverse shell which sends a shell to my <code>netcat</code> listener. </p>
+<p><img alt="image.png" src="image%207.png" /></p>
+<p><img alt="image.png" src="image%208.png" /></p>
+<p><img alt="image.png" src="image%209.png" /></p>
+<h1>3.Privilege Escalation</h1>
+<h2>Paul</h2>
+<p>The password I used to log in as <code>paul</code> in <code>CuteNews</code> is valid to change user within the system. </p>
+<p><img alt="image.png" src="image%2010.png" /></p>
+<h2>Nadav</h2>
+<p>Checking the <code>authorized keys</code> file in the <code>/home/paul/.ssh</code> directory, a key for <code>nadav@passage</code> can be found. I will copy the file <code>id_rsa</code> to my linux and use it to login as <code>nadav</code> in the system. </p>
+<p><img alt="image.png" src="image%2011.png" /></p>
+<p><img alt="image.png" src="image%2012.png" /></p>
+<h2>Root</h2>
+<p>Checking the content of the home directory of <code>nadav</code> a file called <code>.viminfo</code> can be found. This file contains information about the operations that have been made with <code>vim</code>. This includes the list of files which have been recently modified. Between those, the file <code>com.ubuntu.USBcreator.conf</code> seems interesting as it belongs to USBcreator, a software application designed to create bootable LiveUSBs.</p>
+<p><img alt="imagen.png" src="imagen.png" /></p>
+<p><img alt="imagen.png" src="imagen%201.png" /></p>
+<p>While checking if this application is vulnerable, I have come across  <a href="https://unit42.paloaltonetworks.com/usbcreator-d-bus-privilege-escalation-in-ubuntu-desktop/">a Palo Alto page</a> which explains how to exploit this software to escalate privileges. First I have obtained a hash for the password ‘admin’ using <code>OpenSSL</code>. After doing this, I have copied the file <code>/etc/passwd</code> to <code>/tmp</code> and modified the copy so the password for the user <code>root</code> is ‘admin’.</p>
+<p><img alt="imagen.png" src="imagen%202.png" /></p>
+<p><img alt="imagen.png" src="imagen%203.png" /></p>
+<p>Now that the modified <code>passwd</code> file is ready, it is time to substitute the original one with it. This is where the USBCreator application is exploited using <code>gdbus</code>. </p>
+<p><img alt="imagen.png" src="imagen%204.png" /></p>
+<p>Now that the file is changed, I can log in as root using the password ‘admin’ and now I can read <code>root.txt</code> and submit the flag.</p>
+<p><img alt="imagen.png" src="imagen%205.png" /></p>
+        </div>
+    </body>
+</html>
