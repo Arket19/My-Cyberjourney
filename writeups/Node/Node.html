@@ -1,0 +1,116 @@
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Node - My Cyberjourney</title>
+        <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="Node.css" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Alumni+Sans+Pinstripe:ital@0;1&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Roboto+Serif:ital,opsz,wght@0,8..144,100..900;1,8..144,100..900&display=swap" rel="stylesheet">
+    </head>
+    <body>
+        <!-- Menú -->
+        <nav class="w3-bar">
+            <div class="logo">
+                <p>My Cyberjourney</p>
+            </div>
+            <div class="w3-bar-item w3-right w3-hide-large w3-hover-opacity" onclick="w3_open()">
+                <i class="fa fa-bars w3-xlarge"></i>
+            </div>
+            <div class="w3-hide-small">
+                <ul class="elementos-menu">
+                    <li class="w3-bar-item"><a href="../../index.html">Home</a></li>
+                    <li class="w3-bar-item"><a href="../../writeups.html">Writeups</a></li>
+                    <li class="w3-bar-item"><a href="../../learning.html">Learning Journey</a></li>
+                </ul>
+            </div>
+        </nav> 
+        <div class="content">
+            <h1 class="title">MEDIUM-NODE</h1>
+<h1><strong>1. Recon</strong></h1>
+<h2>Nmap</h2>
+<p><code>nmap</code> finds two open ports: SSH (22) and ppp (3000). </p>
+<p><img alt="image.png" src="image.png" /></p>
+<p>The NSE (Nmap Scripting Engine) finds the following information:</p>
+<ul>
+<li>The box is using Ubuntu.</li>
+<li>The version of the SSH service is 7.2p2</li>
+<li>The port 3000 is a HTTP server which is using Apache Hadoop.</li>
+</ul>
+<p><img alt="image.png" src="image%201.png" /></p>
+<h2>Website - TCP 3000</h2>
+<p>The website is for a project of a social media platform to meet new people. </p>
+<p><img alt="image.png" src="image%202.png" /></p>
+<p>I will run <code>gobuster</code> to find hidden directories and/or files but very few results are shown and all of them redirect to the main page. Using <code>burpsuite</code> to see how the POST request of the login functionality looked like I have found that the website is using an API. Once again, I’m running <code>gobuster</code> to scan the API.</p>
+<p><img alt="image.png" src="image%203.png" /></p>
+<p><img alt="imagen.png" src="imagen.png" /></p>
+<p><img alt="imagen.png" src="imagen%201.png" /></p>
+<p>After a few seconds, the file <code>users</code> is found and opening it prints a JSON with some usernames and hashed passwords. One of the usernames is an admin (<code>myP14ceAdm1nAcc0uNT</code>). Using <a href="https://crackstation.net/">CrackStation</a> to try cracking the hashes results in three passwords show as clear text.</p>
+<p><img alt="image.png" src="image%204.png" /></p>
+<p><img alt="imagen.png" src="imagen%202.png" /></p>
+<h1><strong>2. Gaining Access</strong></h1>
+<p>After logging in succesfully using the username <code>myP14ceAdm1nAcc0uNT</code> and the password <code>manchester</code>, another page with a button to download a backup appears. After pressing the button the download of a file called <code>myplace.backup</code> starts and using <code>cat</code> to print its content I find it is a <code>base64</code> encoded string. </p>
+<p><img alt="image.png" src="image%205.png" /></p>
+<p><img alt="image.png" src="image%206.png" /></p>
+<p>I use <code>base64</code> and <code>file</code> to decode it and try finding out which kind of file it is. It is a zip file so I try decompressing it, but a password is needed to do so. I will use <code>zip2john</code> and <code>john</code> to try cracking the password needed to decompress the file. I will use <code>john</code> and <code>zip2john</code> to break the hash and unzip the compressed file. In a few seconds the plain text password is found (<code>magicword</code>) and now I can access the content of the compressed file.</p>
+<p><img alt="imagen.png" src="imagen%203.png" /></p>
+<p><img alt="image.png" src="image%207.png" /></p>
+<p><img alt="image.png" src="image%208.png" /></p>
+<p>The first lines of the file <code>app.js</code> contain the credentials of the <code>MongoDB</code> database (<code>mark:5AYRft73VtFpc84k</code>) which can also be used to log in through <code>SSH</code> to the system as the user <code>mark</code>.</p>
+<p><img alt="imagen.png" src="imagen%204.png" /></p>
+<p><img alt="imagen.png" src="imagen%205.png" /></p>
+<h1><strong>3. Privilege Escalation</strong></h1>
+<h2>Tom</h2>
+<p>After some reconnaisance within the system, I have listed existing SUID binaries and I have found one which I had never seen before (<code>/usr/local/bin/backup</code>). It belongs to root but the members of the group <code>admin</code> can execute it with <code>root</code> permissions. The members of that group are <code>tom</code> and <code>root</code>, so I probably have to get access to <code>tom's</code> account to escalate privileges. </p>
+<p><img alt="imagen.png" src="imagen%206.png" /></p>
+<p><img alt="imagen.png" src="imagen%207.png" /></p>
+<p><img alt="imagen.png" src="imagen%208.png" /></p>
+<p>Checking the processes running in the system that belong to <code>tom</code>, a <code>node</code> service running <code>/var/scheduler/app.js</code> is listed. Using <code>nano</code> to see its content, I can see a function which connects to a <code>MongoDB</code> collection called <code>tasks</code> and executes (as <code>tom</code>) whichever is inside <code>doc.cmd</code>. </p>
+<p><img alt="imagen.png" src="imagen%209.png" /></p>
+<p><img alt="imagen.png" src="imagen%2010.png" /></p>
+<p>I will connect to the database <code>schedulers</code> to see its content and try to insert a <code>cmd</code> element with a reverse shell to gain access as <code>tom</code>. Listing the existing elements in tasks shows nothing so the collection is empty. Inserting a new element results in the spawn of a shell in my <code>netcat</code> listener as the user <code>tom</code>.</p>
+<p><img alt="imagen.png" src="imagen%2011.png" /></p>
+<p><img alt="imagen.png" src="imagen%2012.png" /></p>
+<h2>Root</h2>
+<p>I am going to start trying to get <code>root</code> privileges by exploring the SUID binary I found that I can now execute. Running it with no arguments doesn’t do anything apparently. Same happens running it with one or two arguments. However, using three arguments prints an ASCII art. Using <code>ltrace</code> I can see what the ELF is doing. The first thing it does is comparing the first argument with the string ‘-q’. </p>
+<p><img alt="imagen.png" src="imagen%2013.png" /></p>
+<p><img alt="imagen.png" src="imagen%2014.png" /></p>
+<p>Running the executable file using ‘-q’ as the first argument does not print anything so I can conclude the first argument is made to use a quiet mode which doesn’t print the ASCII image. </p>
+<p><img alt="imagen.png" src="imagen%2015.png" /></p>
+<p>Using <code>ltrace</code> again to see what the binary does I can see that it is opening a file called <code>keys</code> located in <code>/etc/myplace</code>. Opening it I can see there are three strings written inside. After opening the file, the second argument is compared with every key contained in <code>/etc/myplace/keys</code>. As <code>2</code> is not equal to any of those keys, the program stops, so I am going to try using one of the found keys as the second argument.</p>
+<p><img alt="imagen.png" src="imagen%2016.png" /></p>
+<p><img alt="imagen.png" src="imagen%2017.png" /></p>
+<p><code>ltrace</code> now shows that one of the three keys was needed for the binary to continue running, but now the third argument is being compared to a bunch of strings. Those strings are directories and characters that can be used to navigate through the files of the system so I guess the third argument needs a route to a file/directory. </p>
+<p><img alt="imagen.png" src="imagen%2018.png" /></p>
+<p>Running <code>backup</code> with the third argument being ‘/tmp’ prints a base64 code which after being decoded happens to be a zip file. Decompressing it creates a folder with the contents of the <code>/tmp</code> folder. So this binary returns a base64 encoded backup for the specified folder. </p>
+<p><img alt="imagen.png" src="imagen%2019.png" /></p>
+<p><img alt="imagen.png" src="imagen%2020.png" /></p>
+<p>Knowing this I will try to create a backup of the root directory, but as I have seen that the third argument is compared to ‘/root’ and other ways to navigate to it, I can imagine that it won’t work. The binary prints a base64 code but the first thing I notice after trying to decompress it with <code>unzip</code> is that it throws an error and skips root.txt. Using <code>7z</code> (the password is the one we found out earlier) works but printing the uncompressed file will show a trollface.</p>
+<p><img alt="imagen.png" src="imagen%2021.png" /></p>
+<p><img alt="imagen.png" src="imagen%2022.png" /></p>
+<p>As I had imagined, I have to find the way to create a backup of the root folder using a string that the strstr, strcmp and strch functions of the binary won’t detect. One of the strstr functions compare the third argument witth ‘/root’, but moving to <code>/</code> will allow me not to write the slash character and still be able to navigate to the root directory. Once the backup is created I can decompress it, read the root.txt file and submit the flag.</p>
+<p><img alt="imagen.png" src="imagen%2023.png" /></p>
+<p><img alt="imagen.png" src="imagen%2024.png" /></p>
+<p>Although the flag is submited, I can’t execute commands. To achieve this, I will test the <code>backup</code> binary to see if I can achieve a buffer overflow and spawn a shell as <code>root</code>. Earlier, when I was using <code>ltrace</code> to see what the binary was executing, I saw a <code>strcpy</code> function. This function is often vulnerable to this kind of exploits so I will start trying with the third parameter. Executing the binary with ten thousand ‘A’s as the third parameter will result in a segmentation fault error. This is what I was looking for.</p>
+<p><img alt="imagen.png" src="imagen%2025.png" /></p>
+<p>Using <code>gdb ./backup</code> I can see what are the values for each memory register after a segmentation fault. Running <code>r 1 a01a6aa5aaf1d7729f35c8278daae30f8a988257144c003f8b12c5aec39bc508 $(python3 -c 'print("A"*3000)')</code> will result in filling the <code>eip</code> with ‘AAAA’. </p>
+<p><img alt="imagen.png" src="imagen%2026.png" /></p>
+<p>I will use the pattern function of <code>gdb</code> to find how many A’s are required to start filling the eip. It seems that 512 characters are needed to fill the eip</p>
+<p><img alt="imagen.png" src="imagen%2027.png" /></p>
+<p><img alt="imagen.png" src="imagen%2028.png" /></p>
+<p>The type of buffer overflow I am going to attempt is called <code>return2libc</code>. To do this I need the memory direction of <code>libc</code>, <code>system</code>, <code>exit</code> y <code>/bin/sh</code>. I will start getting the offset of <code>libc</code>. For this I have ran the command that prints it a couple times and I can see that it is not always the same so it is a dynamic offset. As this is a 32 bit system the memory direction is very short so it is likely that when I run a command which gets the offset of <code>libc</code> a thousand times, I get the same direction a bunch of times. This is happening correctly so the buffer overflow can be performed.</p>
+<p><img alt="imagen.png" src="imagen%2029.png" /></p>
+<p><img alt="imagen.png" src="imagen%2030.png" /></p>
+<p>Now I need the <code>system</code> and <code>exit</code> offsets. Those are easy to get running a couple commands. The <code>exit</code> offset is <code>0x000237b0</code> and the <code>system</code> offset is <code>0x0003a940</code>. Finding the <code>/bin/sh</code> offset takes just a command. It is <code>0x0015900b</code>.</p>
+<p><img alt="imagen.png" src="imagen%2031.png" /></p>
+<p><img alt="imagen.png" src="imagen%2032.png" /></p>
+<p>Using a quick python script I can print a payload that spawns a shell with <code>root</code> permissions. Now I will run the binary a thousand times (the <code>libc</code> memory direction is dynamic so there has to be an execution where the offset written is the script is the same than the offset of the current execution). At some point a root shell will spawn and the machine will be compromised.</p>
+<p><img alt="imagen.png" src="imagen%2033.png" /></p>
+<p><img alt="imagen.png" src="imagen%2034.png" /></p>
+        </div>
+    </body>
+</html>

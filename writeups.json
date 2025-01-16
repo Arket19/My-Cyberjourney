@@ -1,5 +1,15 @@
 [
     {
+        "title": "HTB: Node",
+        "url": "writeups/Node/Node.html",
+        "tags": [
+            "BOF",
+            "SUID",
+            "MongoDB"
+        ],
+        "date": "16/01/2025"
+    },
+    {
         "title": "HTB: Passage",
         "url": "writeups/Passage/Passage.html",
         "tags": [

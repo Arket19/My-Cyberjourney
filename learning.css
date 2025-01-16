@@ -81,3 +81,55 @@ nav ul li a {
     line-height: 1.8;
     text-align: justify;
 }
+
+
+
+
+
+
+.lista_de_journeys {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    padding-top: 3rem;
+    padding-right: 6px;
+    padding-left: 6px;
+    margin-left: auto;
+    margin-right: auto;
+    width: 87%;
+}
+
+/* Cuadrados del listado */
+.journey-item {
+    display: flex;
+    flex-direction: column; 
+    background-color: rgb(224, 224, 224); 
+    color: black; 
+    margin: 20px;
+    border-radius: 5px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    width: 85%;
+    height: auto;
+    transition: transform 0.2s, box-shadow 0.2s;
+    border: 2px solid #00bcd4;
+    background-color: #1e2125;
+    padding-left: 3rem;
+}
+
+/* Fecha */
+.journey-item p {
+    font-family: 'Roboto Serif', serif;
+    color: white;
+}
+
+/* fecha */
+.journey-item .fecha {
+    font-size: 1.5rem;
+    font-weight: bolder;
+    margin-bottom: 0px;
+}
+/* texto */
+.journey-item .texto {
+    font-size: 1rem;
+}
+
