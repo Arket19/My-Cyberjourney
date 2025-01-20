@@ -3,6 +3,8 @@
         "title": "HTB: Nineveh",
         "url": "writeups/Nineveh/Nineveh.html",
         "tags": [
+            "HTB",
+            "Linux",
             "LFI",
             "Bruteforce",
             "PHPLiteAdmin",
@@ -15,6 +17,8 @@
         "title": "HTB: Node",
         "url": "writeups/Node/Node.html",
         "tags": [
+            "HTB",
+            "Linux",
             "BOF",
             "SUID",
             "MongoDB"
