@@ -1,5 +1,17 @@
 [
     {
+        "title": "HTB: Nineveh",
+        "url": "writeups/Nineveh/Nineveh.html",
+        "tags": [
+            "LFI",
+            "Bruteforce",
+            "PHPLiteAdmin",
+            "Chkrootkit",
+            "Knockd"
+        ],
+        "date": "20/01/2025"
+    },
+    {
         "title": "HTB: Node",
         "url": "writeups/Node/Node.html",
         "tags": [

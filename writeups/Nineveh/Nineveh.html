@@ -1,0 +1,104 @@
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Nineveh - My Cyberjourney</title>
+        <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="Nineveh.css" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Alumni+Sans+Pinstripe:ital@0;1&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Roboto+Serif:ital,opsz,wght@0,8..144,100..900;1,8..144,100..900&display=swap" rel="stylesheet">
+    </head>
+    <body>
+        <!-- Menú -->
+        <nav class="w3-bar">
+            <div class="logo">
+                <p>My Cyberjourney</p>
+            </div>
+            <div class="w3-bar-item w3-right w3-hide-large w3-hover-opacity" onclick="w3_open()">
+                <i class="fa fa-bars w3-xlarge"></i>
+            </div>
+            <div class="w3-hide-small">
+                <ul class="elementos-menu">
+                    <li class="w3-bar-item"><a href="../../index.html">Home</a></li>
+                    <li class="w3-bar-item"><a href="../../writeups.html">Writeups</a></li>
+                    <li class="w3-bar-item"><a href="../../learning.html">Learning Journey</a></li>
+                </ul>
+            </div>
+        </nav> 
+        <div class="content">
+            <h1 class="title">MEDIUM - NINEVEH</h1>
+<h1><strong>1. Recon</strong></h1>
+<h2>Nmap</h2>
+<p><code>nmap</code> finds two open ports: HTTP (80) and HTTPS (443). </p>
+<p><img alt="image.png" src="image.png" /></p>
+<p>The NSE (Nmap Scripting Engine) finds the following information:</p>
+<ul>
+<li>The box is using Ubuntu</li>
+<li>The version of the SSH service is 7.2p2</li>
+<li>Both HTTP and HTTPS services are using Apache 2.4.18.</li>
+<li>Nineveh.htb is a domain name</li>
+</ul>
+<p><img alt="image.png" src="image%201.png" /></p>
+<h2>Website - TCP 80</h2>
+<p>The first thing to be done is adding <code>nineve.htb</code> to the <code>/etc/hosts</code> file. Then, I have visited <code>http://10.10.10.43/</code> where a ‘It works’ message is displayed. Checking the files loaded in the ‘Network’ tab, the cookies or the source code of the page I havcen’t found anything interesting so I am going to try finding hidden directories and files using <code>gobuster</code>. The first two results are the default page and the information about the <code>PHP</code> version which is being used. The third result is a directory which I will fuzz too. </p>
+<p><img alt="imagen.png" src="imagen.png" /></p>
+<p><img alt="image.png" src="image%202.png" /></p>
+<p><img alt="imagen.png" src="imagen%201.png" /></p>
+<p>A bunch of files and directories are found inside <code>department</code>. None of them show anything apart from <code>login.php</code> which has a login form. Inspecting the source code of the page I have found a message from the administrator to a user called <code>amrois</code> saying that MySQML has been installed and asking them to fix the login page. </p>
+<p><img alt="image.png" src="image%203.png" /></p>
+<p><img alt="image.png" src="image%204.png" /></p>
+<p>After a while trying to bypass the login form using SQL injections I have decided to run <code>hydra</code> to try bruteforcing it. The message of the admin has led me to think the login page would be vulnerable to something related to MySQL, but after a few seconds <code>hydra</code> finds the password (<code>1q2w3e4r5t</code>) for the user <code>admin</code>. After using the found credentials a page with an image is displayed and it seems that the site is under construction.</p>
+<p><img alt="image.png" src="image%205.png" /></p>
+<p><img alt="imagen.png" src="imagen%202.png" /></p>
+<p>There are three buttons in the top side menu. The second seems to load a note right below the image. Looking the URL I notice that a parameter is being used to load a file from the system. This could lead to a Local File Inclusion vulnerability if the parameter input is not correctly sanitized. </p>
+<p><img alt="imagen.png" src="imagen%203.png" /></p>
+<p>Trying to achieve loading files from the system using the <code>notes</code> parameter I have noticed that if the string ‘/ninevehNotes’ is not in the route of the file, a message which says ‘No note is selected’ is displayed. However, if that string is written but the file doesn’t exist, it will throw an error. It seems that the server checks if that string is in the value of the <code>notes</code> parameter and then tries searching the file in the system. Knowing this information, I have tried accessing the file <code>/etc/passwd</code> writing ‘/ninevehNotes’ before typing the path to that file and it has been succesfully displayed.</p>
+<p><img alt="imagen.png" src="imagen%204.png" /></p>
+<p><img alt="imagen.png" src="imagen%205.png" /></p>
+<p><img alt="imagen.png" src="imagen%206.png" /></p>
+<h2>Website - TCP 443</h2>
+<p>Visiting <code>https://10.10.10.43/</code> an image with two soldiers celebrating is displayed. Once again I can’t find anything else so I will try fuzzing hidden files and directories with <code>gobuster</code> as I did with port 80 earlier. </p>
+<p><img alt="imagen.png" src="imagen%207.png" /></p>
+<p>Three results are found. The first one is the page with the image of the soldiers, the second one is a directory called <code>db</code>which contains a login form for a <code>phpLiteAdmin v1.9</code> and the third one is another directory which displays an image when visited.</p>
+<p><img alt="imagen.png" src="imagen%208.png" /></p>
+<p><img alt="imagen.png" src="imagen%209.png" /></p>
+<p><img alt="imagen.png" src="imagen%2010.png" /></p>
+<p>Using <code>gobuster</code> to fuzz files and directories inside <code>/db/</code> and <code>/secure_notes/</code> hasn’t worked at all. I find it weird that there are two images with no context so before looking for known vulnerabilities for <code>phpLiteAdmin v1.9</code> I will download them and check if there is any useful information in the exif data or in the strings of the images. Indeed, using <code>strings</code> I have found a private key and an authorized key for the user <code>amrois</code>. However, <code>SSH</code> was not among the available services so I can’t use them.</p>
+<p><img alt="imagen.png" src="imagen%2011.png" /></p>
+<p>A quick Google search shows that this version of <code>phpLiteAdmin</code> has a <a href="https://www.exploit-db.com/exploits/24044">remote code execution vulnerability</a> but authentication is required for that. This time I will bruteforce with <code>hydra</code> first and while it runs I will try bypassing the login form with SQL injections. After a few moments the password is found (<code>password123</code>). Logging in displays the databases management panel.</p>
+<p><img alt="image.png" src="image%206.png" /></p>
+<p><img alt="imagen.png" src="imagen%2012.png" /></p>
+<h1><strong>2. Gaining Access</strong></h1>
+<p>Following the exploit I will create a database called <code>hack.php</code> and inside I will create a table with a text field. The default value field must be filled with the code that will be executed in the server so I will use this code <code>&lt;?php echo shell_exec("id"); ?&gt;</code> to check if the command execution is working properly.</p>
+<p><img alt="imagen.png" src="imagen%2013.png" /></p>
+<p><img alt="imagen.png" src="imagen%2014.png" /></p>
+<p><img alt="imagen.png" src="imagen%2015.png" /></p>
+<p>Now, for the webshell to run, I have to access the database. The <code>Structure</code> tab of the <code>hack.php</code> page shows that the path to the database is <code>/var/tmp/hack.php</code>. To access that file I will use the LFI I found earlier in the <code>department</code> page in port 80. </p>
+<p><img alt="imagen.png" src="imagen%2016.png" /></p>
+<p>The code is running properly so instead of running <code>id</code>, I will drop the table and create it again with a reverse shell instead.</p>
+<p><img alt="imagen.png" src="imagen%2017.png" /></p>
+<p><img alt="imagen.png" src="imagen%2018.png" /></p>
+<h1>3. Privilege Escalation</h1>
+<h2>Root</h2>
+<p>After using <code>ps aux</code> to monitor the running processes, I have seen that a binary called <code>chkrootkit</code> and a bash script called <code>vulnScan.sh</code> are running in the target. I have no permissions to read or write any of them but searching the name of the binary in Google I can see that it is an <a href="https://www.chkrootkit.org/">application</a> to find signs of rootkits locally. There is an <a href="https://www.exploit-db.com/exploits/33899">existing exploit</a> for this software that allows attackers to get <code>root</code> access. This happens because when the binary is executed, the content of the file <code>${ROOTDIR}tmp/update</code> is run as the user which executes the binary.</p>
+<p><img alt="imagen.png" src="imagen%2019.png" /></p>
+<p>In this case, <code>root</code> is running the binary periodically, so I create a file called <code>upload</code> in <code>/tmp</code>. This file contains an executable code which send a shell to my kali. After that, I give execution permissions to it (<code>chmod +x  upload</code>) and the next time <code>chkrootkit</code> is executed, a shell spawns in my <code>netcat</code> listener allowing me to read and submit the flags.</p>
+<p><img alt="imagen.png" src="imagen%2020.png" /></p>
+<p><img alt="imagen.png" src="imagen%2021.png" /></p>
+<h2>Amrois</h2>
+<p>Although the machine is already rooted, I have also noticed that <code>knockd</code> is running, so I try reading the configuration file for this process and I discover that I can knock the ports 571, 290 and 911 to open the port 22 (SSH).</p>
+<p><img alt="imagen.png" src="imagen%2022.png" /></p>
+<p><img alt="imagen.png" src="imagen%2023.png" /></p>
+<p>Scanning the port 22 with <code>nmap</code> shows that is in a filtered state so I cannot access to the user <code>amrois</code> with the RSA Private Key that I found in the strings of an image earlier. But after scanning the ports 571, 290 and 911 in that order, its state turns to open.  </p>
+<p><img alt="imagen.png" src="imagen%2024.png" /></p>
+<p><img alt="imagen.png" src="imagen%2025.png" /></p>
+<p><img alt="imagen.png" src="imagen%2026.png" /></p>
+<p>Now I can use the id_rsa key to login through <code>ssh</code> as the user <code>amrois</code>.</p>
+<p><img alt="imagen.png" src="imagen%2027.png" /></p>
+        </div>
+    </body>
+</html>
