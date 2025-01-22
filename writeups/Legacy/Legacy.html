@@ -1,0 +1,73 @@
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Legacy - My Cyberjourney</title>
+        <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="Legacy.css" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Alumni+Sans+Pinstripe:ital@0;1&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Roboto+Serif:ital,opsz,wght@0,8..144,100..900;1,8..144,100..900&display=swap" rel="stylesheet">
+    </head>
+    <body>
+        <!-- Menú -->
+        <nav class="w3-bar">
+            <div class="logo">
+                <p>My Cyberjourney</p>
+            </div>
+            <div class="w3-bar-item w3-right w3-hide-large w3-hover-opacity" onclick="w3_open()">
+                <i class="fa fa-bars w3-xlarge"></i>
+            </div>
+            <div class="w3-hide-small">
+                <ul class="elementos-menu">
+                    <li class="w3-bar-item"><a href="../../index.html">Home</a></li>
+                    <li class="w3-bar-item"><a href="../../writeups.html">Writeups</a></li>
+                    <li class="w3-bar-item"><a href="../../learning.html">Learning Journey</a></li>
+                </ul>
+            </div>
+        </nav> 
+        <div class="content">
+            <h1 class="title">EASY - LEGACY</h1>
+<h1><strong>1. Recon</strong></h1>
+<h2>Nmap</h2>
+<p><code>nmap</code> finds three open ports: msrpc (135), NetBios (139) and Microsoft-ds (445). </p>
+<p><img alt="imagen.png" src="imagen.png" /></p>
+<p>The NSE (Nmap Scripting Engine) finds the following information:</p>
+<ul>
+<li>The box is using Windows XP</li>
+<li>The target is vulnerable to MS17-010</li>
+<li>The target is vulnerable to MS08-067</li>
+</ul>
+<p><img alt="imagen.png" src="imagen%201.png" /></p>
+<h1><strong>2. Gaining Access</strong></h1>
+<p>As I know the system is vulnerable to two exploits that grant Remote Code Execution, I will use both of them.</p>
+<h2>MS-17-010</h2>
+<p>To exploit this vulnerability, as I did in <a href="https://arket19.github.io/My-Cyberjourney/writeups/Blue/Blue.html">Blue</a>, I will use <a href="https://github.com/helviojunior/MS17-010">this GitHub repository</a>. The <code>send_and_execute.py</code> file lets me send and execute a <code>.exe</code> to the target so I just have to generate a reverse shell with <code>msfvenom</code> and send it. After doing it, a shell with <code>Adminsitrator</code> permissions will spawn in my <code>netcat</code> listener.</p>
+<p><img alt="imagen.png" src="imagen%202.png" /></p>
+<p><img alt="imagen.png" src="imagen%203.png" /></p>
+<p><img alt="imagen.png" src="imagen%204.png" /></p>
+<h2>MS-08-067</h2>
+<p>To exploit this vulnerability I will use a <a href="https://github.com/jivoi/pentest/blob/master/exploit_win/ms08-067.py">script from Jivoi</a> . This script needs to be modified with a shellcode which can be generated with <code>msfvenom</code>. </p>
+<p><img alt="imagen.png" src="imagen%205.png" /></p>
+<p>This script needs three parameters to run succesfully. The first one is the IP address of the vulnerable system. The second one is the OS number (check the list below). As I know the target is using Windows XP I will try with the number 6. And the third parameter is the port where <code>SMB</code> is running on. After running the script, a shell spawns in my netcat listener and, as I have <code>Administrator</code> permissions, I can grab both flags. </p>
+<aside>
+💡
+
+1 → Windows XP SP0/SP1 Universal
+2 → Windows 2000 Universal
+3 → Windows 2003 SP0 Universal
+4 → Windows 2003 SP1 English
+5 → Windows XP SP3 French (NX)
+6 → Windows XP SP3 English (NX)
+7 → Windows XP SP3 English (AlwaysOn NX)
+
+</aside>
+
+<p><img alt="imagen.png" src="imagen%206.png" /></p>
+<p><img alt="imagen.png" src="imagen%207.png" /></p>
+        </div>
+    </body>
+</html>

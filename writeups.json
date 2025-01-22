@@ -1,5 +1,16 @@
 [
     {
+        "title": "HTB: Legacy",
+        "url": "writeups/Legacy/Legacy.html",
+        "tags": [
+            "HTB",
+            "Windows",
+            "MS17-010",
+            "MS08-067"
+        ],
+        "date": "22/01/2025"
+    },
+    {
         "title": "HTB: Nineveh",
         "url": "writeups/Nineveh/Nineveh.html",
         "tags": [
