@@ -44,7 +44,7 @@
 </ul>
 <p><img alt="image.png" src="image%201.png" /></p>
 <h2>Website - TCP 80</h2>
-<p>The first thing to be done is adding <code>nineve.htb</code> to the <code>/etc/hosts</code> file. Then, I have visited <code>http://10.10.10.43/</code> where a ‘It works’ message is displayed. Checking the files loaded in the ‘Network’ tab, the cookies or the source code of the page I havcen’t found anything interesting so I am going to try finding hidden directories and files using <code>gobuster</code>. The first two results are the default page and the information about the <code>PHP</code> version which is being used. The third result is a directory which I will fuzz too. </p>
+<p>The first thing to be done is adding <code>nineveh.htb</code> to the <code>/etc/hosts</code> file. Then, I have visited <code>http://10.10.10.43/</code> where a ‘It works’ message is displayed. Checking the files loaded in the ‘Network’ tab, the cookies or the source code of the page I havcen’t found anything interesting so I am going to try finding hidden directories and files using <code>gobuster</code>. The first two results are the default page and the information about the <code>PHP</code> version which is being used. The third result is a directory which I will fuzz too. </p>
 <p><img alt="imagen.png" src="imagen.png" /></p>
 <p><img alt="image.png" src="image%202.png" /></p>
 <p><img alt="imagen.png" src="imagen%201.png" /></p>
@@ -63,7 +63,7 @@
 <h2>Website - TCP 443</h2>
 <p>Visiting <code>https://10.10.10.43/</code> an image with two soldiers celebrating is displayed. Once again I can’t find anything else so I will try fuzzing hidden files and directories with <code>gobuster</code> as I did with port 80 earlier. </p>
 <p><img alt="imagen.png" src="imagen%207.png" /></p>
-<p>Three results are found. The first one is the page with the image of the soldiers, the second one is a directory called <code>db</code>which contains a login form for a <code>phpLiteAdmin v1.9</code> and the third one is another directory which displays an image when visited.</p>
+<p>Three results are found. The first one is the page with the image of the soldiers, the second one is a directory called <code>db</code> which contains a login form for a <code>phpLiteAdmin v1.9</code> and the third one is another directory which displays an image when visited.</p>
 <p><img alt="imagen.png" src="imagen%208.png" /></p>
 <p><img alt="imagen.png" src="imagen%209.png" /></p>
 <p><img alt="imagen.png" src="imagen%2010.png" /></p>
@@ -84,7 +84,7 @@
 <p><img alt="imagen.png" src="imagen%2018.png" /></p>
 <h1>3. Privilege Escalation</h1>
 <h2>Root</h2>
-<p>After using <code>ps aux</code> to monitor the running processes, I have seen that a binary called <code>chkrootkit</code> and a bash script called <code>vulnScan.sh</code> are running in the target. I have no permissions to read or write any of them but searching the name of the binary in Google I can see that it is an <a href="https://www.chkrootkit.org/">application</a> to find signs of rootkits locally. There is an <a href="https://www.exploit-db.com/exploits/33899">existing exploit</a> for this software that allows attackers to get <code>root</code> access. This happens because when the binary is executed, the content of the file <code>${ROOTDIR}tmp/update</code> is run as the user which executes the binary.</p>
+<p>After using <code>ps aux</code> to monitor the running processes, I have seen that a binary called <code>chkrootkit</code> and a bash script called <code>vulnScan.sh</code> are running in the target. I have no permissions to read or write any of them but searching the name of the binary in Google I can see that <code>chkrootkit</code> is an <a href="https://www.chkrootkit.org/">application</a> to find signs of rootkits locally. There is an <a href="https://www.exploit-db.com/exploits/33899">existing exploit</a> for this software that allows attackers to get <code>root</code> access. This happens because when the binary is executed, the content of the file <code>${ROOTDIR}tmp/update</code> is run as the user which executes the binary.</p>
 <p><img alt="imagen.png" src="imagen%2019.png" /></p>
 <p>In this case, <code>root</code> is running the binary periodically, so I create a file called <code>upload</code> in <code>/tmp</code>. This file contains an executable code which send a shell to my kali. After that, I give execution permissions to it (<code>chmod +x  upload</code>) and the next time <code>chkrootkit</code> is executed, a shell spawns in my <code>netcat</code> listener allowing me to read and submit the flags.</p>
 <p><img alt="imagen.png" src="imagen%2020.png" /></p>

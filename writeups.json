@@ -1,5 +1,31 @@
 [
     {
+        "title": "HTB: Knife",
+        "url": "writeups/Knife/Knife.html",
+        "tags": [
+            "HTB",
+            "Linux",
+            "Knife",
+            "Sudo",
+            "PHP"
+        ],
+        "date": "03/02/2025"
+    },
+    {
+        "title": "HTB: Luanne",
+        "url": "writeups/Luanne/Luanne.html",
+        "tags": [
+            "HTB",
+            "Linux",
+            "Lua Injection",
+            "Supervisor",
+            "NetBSD",
+            "GPG",
+            "Httpd"
+        ],
+        "date": "27/01/2025"
+    },
+    {
         "title": "HTB: Legacy",
         "url": "writeups/Legacy/Legacy.html",
         "tags": [

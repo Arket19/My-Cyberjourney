@@ -1,0 +1,62 @@
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Knife - My Cyberjourney</title>
+        <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="Knife.css" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Alumni+Sans+Pinstripe:ital@0;1&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Roboto+Serif:ital,opsz,wght@0,8..144,100..900;1,8..144,100..900&display=swap" rel="stylesheet">
+    </head>
+    <body>
+        <!-- Menú -->
+        <nav class="w3-bar">
+            <div class="logo">
+                <p>My Cyberjourney</p>
+            </div>
+            <div class="w3-bar-item w3-right w3-hide-large w3-hover-opacity" onclick="w3_open()">
+                <i class="fa fa-bars w3-xlarge"></i>
+            </div>
+            <div class="w3-hide-small">
+                <ul class="elementos-menu">
+                    <li class="w3-bar-item"><a href="../../index.html">Home</a></li>
+                    <li class="w3-bar-item"><a href="../../writeups.html">Writeups</a></li>
+                    <li class="w3-bar-item"><a href="../../learning.html">Learning Journey</a></li>
+                </ul>
+            </div>
+        </nav> 
+        <div class="content">
+            <h1 class="title">EASY - KNIFE</h1>
+<h1><strong>1. Recon</strong></h1>
+<h2>Nmap</h2>
+<p><code>nmap</code> finds two open ports: SSH (22) and HTTP (80). </p>
+<p><img alt="imagen.png" src="imagen.png" /></p>
+<p>The NSE (Nmap Scripting Engine) finds the following information:</p>
+<ul>
+<li>The box is using Ubuntu</li>
+<li>The version of the SSH service is OpenSSH 8.2p1</li>
+<li>The port 80 HTTP server is using Apache httpd 2.4.41 and the title suggests the website is about a Emergent Medical Idea.</li>
+</ul>
+<p><img alt="imagen.png" src="imagen%201.png" /></p>
+<h2>Website - TCP 80</h2>
+<p>The website displays an incomplete message and a ‘menu’ that doesn’t work. As <code>gobuster</code> hasn’t found any hidden files or directories and the source code doesn’t contain anything useful, I will try finding existing vulnerabilities for the technologies the website is using. These can be checked either in the DevTools or with an extension called Wappalyzer.</p>
+<p><img alt="imagen.png" src="imagen%202.png" /></p>
+<p><img alt="imagen.png" src="imagen%203.png" /></p>
+<p>Searching exploits for every technology the website is using I find that <code>PHP 8.1.0-dev</code> is vulnerable to a Remote Code Execution.</p>
+<p><img alt="imagen.png" src="imagen%204.png" /></p>
+<h1><strong>2. Gaining Access</strong></h1>
+<p>After reading <a href="https://flast101.github.io/php-8.1.0-dev-backdoor-rce/">this page</a>, now I know this version of <code>PHP</code> is vulnerable because of two malicious commits that were pushed to the PHP Git code repo. These commits planted a backdoor that lets the attackers execute remote code in the server through the headers. Sending a <code>User-Agentt</code> header with the string ‘zerodium’ and a command allows the code execution. Using <a href="https://github.com/flast101/php-8.1.0-dev-backdoor-rce/blob/main/backdoor_php_8.1.0-dev.py">this script</a> I get a shell and I send a reverse shell to my Kali so I can upgrade it to a fully interactive TTY.</p>
+<p><img alt="imagen.png" src="imagen%205.png" /></p>
+<h1>3. Privilege Escalation</h1>
+<h2>Root</h2>
+<p>In the <code>james</code> directory there is a script (<code>knife.sh</code>) which spawns a shell. It belongs to james so I will check what <code>sudo</code> permissions do I have. This shows that there is a binary called knife which I can run as <code>sudo</code>. Looking up ‘knife privesc’ in Google I find a <a href="https://gtfobins.github.io/gtfobins/knife/">GTFOBins</a> article where I discover that I can run <code>sudo knife exec -E 'exec "/bin/sh"'</code> to spawn a shell with <code>root</code> permissions. Now I can read <code>root.txt</code> and submit the flag. </p>
+<p><img alt="imagen.png" src="imagen%206.png" /></p>
+<p><img alt="imagen.png" src="imagen%207.png" /></p>
+<p><img alt="imagen.png" src="imagen%208.png" /></p>
+        </div>
+    </body>
+</html>

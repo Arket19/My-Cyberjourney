@@ -268,6 +268,7 @@ img {
 
 p {
     margin-bottom: 15px;
+    text-align: justify;
 }
         """  
            

@@ -72,10 +72,10 @@
 <p>The hint about checking the emails and the lack of vulnerabilities in the web services leads me to think that I should try reading emails. Although I have no credentials yet, I have a list of emails. I will try throwing a phising campaign with <code>swaks</code> to see if I get back any kind of information. The first step is getting the list of emails with a quick python script that prints all the emails separated by commas.</p>
 <p><img alt="image.png" src="image%2012.png" /></p>
 <p><img alt="image.png" src="image%2013.png" /></p>
-<p>Now I can use the output of this script to send an email to each one of them with <code>swaks</code>. I will put in the body of the message a link to a <code>netcat</code> listener I have started in my kali to get the response in case there is one. After a few moments a POST request is received. It contains some parameters, including an email ( <code>paulbyrd@sneakymailer.htb</code> ) and an encrypted password. <code>^(#J@SkFv2[%KhIxKk(Ju</code>hqcHl&lt;:Ht`</p>
+<p>Now I can use the output of this script to send an email to each one of them with <code>swaks</code>. I will put in the body of the message a link to a <code>netcat</code> listener I have started in my kali to get the response in case there is one. After a few moments a POST request is received. It contains some parameters, including an email (<code>paulbyrd@sneakymailer.htb</code>) and an encrypted password.</p>
 <p><img alt="image.png" src="image%2014.png" /></p>
 <p><img alt="image.png" src="image%2015.png" /></p>
-<p><code>CyberChef</code> can be used to decode the password using <code>URL Decode</code> and From <code>Base64</code>. </p>
+<p><code>CyberChef</code> can be used to decode the password using <code>URL Decode</code> and <code>From Base64</code>. </p>
 <p><img alt="image.png" src="7e618bda-90b1-408f-a30e-2f078ba7453a.png" /></p>
 <p><img alt="image.png" src="b56f3dd2-e6e8-40e5-82de-5392a6364bbd.png" /></p>
 <p>I will connect to the <code>IMAP</code> service (port 143) and use the credentials I have found to log in. No inbox but <code>INBOX.Sent Items</code> has any existing emails. Checking on those two emails I have found <code>developer:m^AsY7vTKVT+dV1{WOU%@NaHkUAId3]C</code> </p>
