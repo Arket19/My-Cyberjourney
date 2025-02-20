@@ -44,7 +44,7 @@
 </ul>
 <p><img alt="imagen.png" src="imagen%201.png" /></p>
 <h2>Website - TCP 5080</h2>
-<p>Accessing the <code>HTTP</code> service I see a login page for the <code>GitLab</code> Community Edition. Checking <code>robots.txt</code> I see there are a lot of disallowed entries but after visiting some of them I realise those routes aren’t useful. Using <code>gobuster</code> I can’t find any hidden files or directories which I can access.</p>
+<p>Accessing the <code>HTTP</code> service I see a login page for the <code>GitLab</code> Community Edition. Checking <code>robots.txt</code> I see there are a lot of disallowed entries but after visiting some of them I have realized those routes are not useful. Using <code>gobuster</code> I can’t find any hidden files or directories which I can access.</p>
 <p><img alt="imagen.png" src="imagen%202.png" /></p>
 <p><img alt="imagen.png" src="imagen%203.png" /></p>
 <p>As I haven’t found anything yet, I will create an account (<code>arkett:arketarket</code>) and log in to see if I can get access to the target through any vulnerable feature. Once the account is created, I find in the ‘Help’ page that the <code>GitLab</code> version being used is <code>11.4.7</code>. After doing some research on known vulnerabilities for that version, I find some exploits to get remote code execution.</p>
