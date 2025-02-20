@@ -1,0 +1,61 @@
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Ready - My Cyberjourney</title>
+        <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="Ready.css" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Alumni+Sans+Pinstripe:ital@0;1&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Roboto+Serif:ital,opsz,wght@0,8..144,100..900;1,8..144,100..900&display=swap" rel="stylesheet">
+    </head>
+    <body>
+        <!-- Menú -->
+        <nav class="w3-bar">
+            <div class="logo">
+                <p>My Cyberjourney</p>
+            </div>
+            <div class="w3-bar-item w3-right w3-hide-large w3-hover-opacity" onclick="w3_open()">
+                <i class="fa fa-bars w3-xlarge"></i>
+            </div>
+            <div class="w3-hide-small">
+                <ul class="elementos-menu">
+                    <li class="w3-bar-item"><a href="../../index.html">Home</a></li>
+                    <li class="w3-bar-item"><a href="../../writeups.html">Writeups</a></li>
+                    <li class="w3-bar-item"><a href="../../learning.html">Learning Journey</a></li>
+                </ul>
+            </div>
+        </nav> 
+        <div class="content">
+            <h1 class="title">MEDIUM - READY</h1>
+<h1><strong>1. Recon</strong></h1>
+<h2>Nmap</h2>
+<p><code>nmap</code> finds two open ports: SSH (22) and onscreen (5080). </p>
+<p><img alt="imagen.png" src="imagen.png" /></p>
+<p>The NSE (Nmap Scripting Engine) finds the following information:</p>
+<ul>
+<li>The box is using Ubuntu</li>
+<li>Port 5080 is a HTTP service using nginx.</li>
+<li>The title suggests the main page is a login for GitLab.</li>
+<li>There are 53 disallowed entries in robots.txt</li>
+</ul>
+<p><img alt="imagen.png" src="imagen%201.png" /></p>
+<h2>Website - TCP 5080</h2>
+<p>Accessing the <code>HTTP</code> service I see a login page for the <code>GitLab</code> Community Edition. Checking <code>robots.txt</code> I see there are a lot of disallowed entries but after visiting some of them I realise those routes aren’t useful. Using <code>gobuster</code> I can’t find any hidden files or directories which I can access.</p>
+<p><img alt="imagen.png" src="imagen%202.png" /></p>
+<p><img alt="imagen.png" src="imagen%203.png" /></p>
+<p>As I haven’t found anything yet, I will create an account (<code>arkett:arketarket</code>) and log in to see if I can get access to the target through any vulnerable feature. Once the account is created, I find in the ‘Help’ page that the <code>GitLab</code> version being used is <code>11.4.7</code>. After doing some research on known vulnerabilities for that version, I find some exploits to get remote code execution.</p>
+<p><img alt="imagen.png" src="imagen%204.png" /></p>
+<h1><strong>2. Gaining Access</strong></h1>
+<p>After trying a couple exploits, I have found <a href="https://github.com/Algafix/gitlab-RCE-11.4.7/blob/main/rce_script.py">this one</a> which successfully spawns a shell in my netcat listener. </p>
+<p><img alt="imagen.png" src="imagen%205.png" /></p>
+<p><img alt="imagen.png" src="imagen%206.png" /></p>
+<p>This exploit takes advantage of two <code>GitLab</code> vulnerabilities. The first one (CVE-2018-19585) is a SSRF vulnerability which abuses the <code>GitLab</code> ‘import project’ feature and the second one (CVE-2018-19571) is a RCE via <code>Redis</code> injection. When importing projects, <code>GitLab</code> fetches data from a URL supplied by the user. In vulnerable versions this URL is not validated properly and an attacker can force the server to request internal resources. Using <code>import_url%5D=git://[0:0:0:0:0:ffff:127.0.0.1]:6379/</code>, the exploit makes <code>GitLab</code> connect to its own <code>Redis</code> database. As old <code>Redis</code> versions do not require authentication, the script is allowed to push a malicious job into <code>GitLab’s</code> background job queue. This job makes <code>GitLabShellWorker</code>  execute arbitrary code on the server. Once the malicious job is added, it is executed sending a request <code>project_post = request.post(url_project, data=exploit_form, verify=False)</code>.</p>
+<h1><strong>3. Privilege Escalation</strong></h1>
+<p>Work in progress ;)</p>
+        </div>
+    </body>
+</html>

@@ -1,5 +1,28 @@
 [
     {
+        "title": "HTB: Ready",
+        "url": "writeups/Ready/Ready.html",
+        "tags": [
+            "HTB",
+            "Linux",
+            "GitLab",
+            ""
+        ],
+        "date": "20/02/2025"
+    },
+    {
+        "title": "HTB: Time",
+        "url": "writeups/Time/Time.html",
+        "tags": [
+            "HTB",
+            "Linux",
+            "Jackson",
+            "Deserialization",
+            "Cron"
+        ],
+        "date": "20/02/2025"
+    },
+    {
         "title": "HTB: Knife",
         "url": "writeups/Knife/Knife.html",
         "tags": [

