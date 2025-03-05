@@ -5,6 +5,17 @@
         "tags": [
             "HTB",
             "Linux",
+            "GitLab",
+            "Docker"
+        ],
+        "date": "05/03/2025"
+    },
+    {
+        "title": "HTB: Ready",
+        "url": "writeups/Ready/Ready.html",
+        "tags": [
+            "HTB",
+            "Linux",
             "GitLab"
         ],
         "date": "20/02/2025"

@@ -44,7 +44,7 @@
 </ul>
 <p><img alt="imagen.png" src="imagen%201.png" /></p>
 <h2>Website - TCP 5080</h2>
-<p>Accessing the <code>HTTP</code> service I see a login page for the <code>GitLab</code> Community Edition. Checking <code>robots.txt</code> I see there are a lot of disallowed entries but after visiting some of them I have realized those routes are not useful. Using <code>gobuster</code> I can’t find any hidden files or directories which I can access.</p>
+<p>Accessing the <code>HTTP</code> service I see a login page for the <code>GitLab</code> Community Edition. Checking <code>robots.txt</code> I see there are a lot of disallowed entries but after visiting some of them I realise those routes aren’t useful. Using <code>gobuster</code> I can’t find any hidden files or directories which I can access.</p>
 <p><img alt="imagen.png" src="imagen%202.png" /></p>
 <p><img alt="imagen.png" src="imagen%203.png" /></p>
 <p>As I haven’t found anything yet, I will create an account (<code>arkett:arketarket</code>) and log in to see if I can get access to the target through any vulnerable feature. Once the account is created, I find in the ‘Help’ page that the <code>GitLab</code> version being used is <code>11.4.7</code>. After doing some research on known vulnerabilities for that version, I find some exploits to get remote code execution.</p>
@@ -55,7 +55,15 @@
 <p><img alt="imagen.png" src="imagen%206.png" /></p>
 <p>This exploit takes advantage of two <code>GitLab</code> vulnerabilities. The first one (CVE-2018-19585) is a SSRF vulnerability which abuses the <code>GitLab</code> ‘import project’ feature and the second one (CVE-2018-19571) is a RCE via <code>Redis</code> injection. When importing projects, <code>GitLab</code> fetches data from a URL supplied by the user. In vulnerable versions this URL is not validated properly and an attacker can force the server to request internal resources. Using <code>import_url%5D=git://[0:0:0:0:0:ffff:127.0.0.1]:6379/</code>, the exploit makes <code>GitLab</code> connect to its own <code>Redis</code> database. As old <code>Redis</code> versions do not require authentication, the script is allowed to push a malicious job into <code>GitLab’s</code> background job queue. This job makes <code>GitLabShellWorker</code>  execute arbitrary code on the server. Once the malicious job is added, it is executed sending a request <code>project_post = request.post(url_project, data=exploit_form, verify=False)</code>.</p>
 <h1><strong>3. Privilege Escalation</strong></h1>
-<p>Work in progress ;)</p>
+<p>After getting access to the target, the first thing I do is listing the contents of <code>/</code> and I see a <code>.dockerenv</code> file which suggests that I’m on a container. After looking around the system for a while, I discover that there is a <code>backup</code> directory inside of <code>/opt</code>. Using <code>grep</code> I find a password (<code>wW59!ZKMbG9+*#h</code>) in one of the files of that directory and after trying to log into other users in the system, I find that it is the <code>root</code> password. </p>
+<p><img alt="imagen.png" src="imagen%207.png" /></p>
+<p><img alt="imagen.png" src="imagen%208.png" /></p>
+<p>The <code>root.txt</code> file is not inside <code>/root</code> because I am still inside the container. However, while checking the files in <code>/opt/backup</code>, I found that the <code>docker-compose.yml</code> file has the <code>privileged</code> option set to <code>true</code>. This likely means that I can see all devices and partitions using <code>lsblk</code>.</p>
+<p><img alt="imagen.png" src="imagen%209.png" /></p>
+<p><img alt="imagen.png" src="imagen%2010.png" /></p>
+<p>As I thought, running <code>lsblk</code> I see that the target system is in <code>sda2</code>, so I can use <code>mount</code> to copy the file system into a directory and take the root flag from there. To gain command execution in the target system, <code>chroot</code> could be used to create an isolated environment and execute commands from there. </p>
+<p><img alt="imagen.png" src="imagen%2011.png" /></p>
+<p><img alt="imagen.png" src="imagen%2012.png" /></p>
         </div>
     </body>
 </html>
