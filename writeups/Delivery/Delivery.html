@@ -1,0 +1,81 @@
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Delivery - My Cyberjourney</title>
+        <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="Delivery.css" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Alumni+Sans+Pinstripe:ital@0;1&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Roboto+Serif:ital,opsz,wght@0,8..144,100..900;1,8..144,100..900&display=swap" rel="stylesheet">
+    </head>
+    <body>
+        <!-- Menú -->
+        <nav class="w3-bar">
+            <div class="logo">
+                <p>My Cyberjourney</p>
+            </div>
+            <div class="w3-bar-item w3-right w3-hide-large w3-hover-opacity" onclick="w3_open()">
+                <i class="fa fa-bars w3-xlarge"></i>
+            </div>
+            <div class="w3-hide-small">
+                <ul class="elementos-menu">
+                    <li class="w3-bar-item"><a href="../../index.html">Home</a></li>
+                    <li class="w3-bar-item"><a href="../../writeups.html">Writeups</a></li>
+                    <li class="w3-bar-item"><a href="../../learning.html">Learning Journey</a></li>
+                </ul>
+            </div>
+        </nav> 
+        <div class="content">
+            <h1 class="title">EASY - DELIVERY</h1>
+<h1><strong>1. Recon</strong></h1>
+<h2>Nmap</h2>
+<p><code>nmap</code> finds three open ports: SSH (22), HTTP (80) and another unknown service running on port 8065.</p>
+<p><img alt="imagen.png" src="imagen.png" /></p>
+<p>The NSE (Nmap Scripting Engine) finds the following information:</p>
+<ul>
+<li>The box is using Debian</li>
+<li>The version of the SSH service is OpenSSH 7.9p1</li>
+<li>The webserver running in port 80 is using nginx 1.14.2</li>
+<li>The titles of the webpages are Welcome (80) and Mattermost (8065)</li>
+</ul>
+<p><img alt="imagen.png" src="imagen%201.png" /></p>
+<hr />
+<h2>Website - TCP 80</h2>
+<p>Visiting the website I see there is a domain (<code>delivery.htb</code>) and a subdomain (<code>helpdesk.delivery.htb</code>) so I add them both to <code>/etc/hosts</code>. Inside the “contact us” section there is a message explaining that unregistered users have to get an email address by contacting the helpdesk team in order to access the <code>Mattermost</code> server (port 8065). </p>
+<p><img alt="imagen.png" src="imagen%202.png" /></p>
+<p><img alt="imagen.png" src="imagen%203.png" /></p>
+<p>Accessing the helpdesk page I find I can open a new ticket, check the status of a ticket or sign in as I am a guest user. I will start by creating a new ticket and see if I can get an email address to access the <code>Mattermost</code> server. After creating the ticket, a message is displayed. This message says that I can modify information by mailing <code>7759464@delivery.htb</code>. </p>
+<p><img alt="imagen.png" src="imagen%204.png" /></p>
+<p><img alt="imagen.png" src="imagen%205.png" /></p>
+<p><img alt="imagen.png" src="imagen%206.png" /></p>
+<p>The first page I saw said that I could use a <code>@delivery.htb</code> address to access the <code>Mattermost</code> server, and this address created for my ticket is a <code>@delivery.htb</code> address, so I will try creating an account in <code>Mattermost</code> with it. After creating the account I have to check my inbox to verify it, but I do not have access to an inbox. However, as this account is made to edit the information of an existing ticket, checking the status of that ticket will probably show how to verify the new <code>Mattermost</code> account.</p>
+<p><img alt="imagen.png" src="imagen%207.png" /></p>
+<p><img alt="imagen.png" src="imagen%208.png" /></p>
+<p>As I imagined, I can see the message sent to that account from the ticket status, so now I can verify the account and log in to <code>Mattermost</code>. </p>
+<p><img alt="imagen.png" src="imagen%209.png" /></p>
+<p><img alt="imagen.png" src="imagen%2010.png" /></p>
+<hr />
+<h2><strong>2. Gaining Access</strong></h2>
+<p>After logging into the new account and joining the exisiting team (<code>Internal</code>), I can see some messages posted by the user <code>root</code>. These messages contain plain text credentials (<code>maildeliverer:Youve_G0t_Mail!</code>) which can be used to log in through SSH to the target. There are also two messages saying that passwords are often reused and that some of them are a variant of <code>PleaseSuscribe!</code>. That password is not in <code>RockYou</code>, but it seems that if I get the hash of a password I will be able to crack it with <code>hashcat</code> rules.  </p>
+<p><img alt="imagen.png" src="imagen%2011.png" /></p>
+<p><img alt="imagen.png" src="imagen%2012.png" /></p>
+<hr />
+<h1>3. Privilege Escalation</h1>
+<h2>Root</h2>
+<p>Using <code>netstat</code> I can see there is a <code>mysql</code> service running in the server. This database service is probably being used either by the helpdesk service or the <code>Mattermost</code> service. Looking around for configuration files I find <code>/opt/mattermost/config/config.json</code>. This file contains plain text credentials for the <code>mysql</code> service that grant me access to the databases. Inside the <code>Users</code> table I find the usernames and the hashed passwords.</p>
+<p><img alt="imagen.png" src="imagen%2013.png" /></p>
+<p><img alt="imagen.png" src="imagen%2014.png" /></p>
+<p><img alt="imagen.png" src="imagen%2015.png" /></p>
+<p><img alt="imagen.png" src="imagen%2016.png" /></p>
+<p>As I read earlier in the <code>Mattermost</code> messages, I should be using <code>hashcat</code> rules to create variations of the <code>PleaseSuscribe!</code> password, so I create a <code>hash.txt</code> file with the hashed password for <code>root</code>, and a <code>pass.txt</code> file with the known password. The <code>hashcat</code> help menu shows how to use a file to apply different rules to each word of a dictionary. The example file in the help menu is <code>best64.rule</code> so I look it up and find <a href="https://trustedsec.com/blog/better-hacking-through-cracking-know-your-rules">this article</a> which recommends using that rule set before trying any others. After downloading it from <a href="https://github.com/samirettali/password-cracking-rules/blob/master/best64.rule">GitHub</a>, I run <code>hashcat</code> in dictionary attack mode using <code>best64.rule</code> and get the password for root. Now I can read <code>root.txt</code> and submit the flag.</p>
+<p><img alt="imagen.png" src="imagen%2017.png" /></p>
+<p><img alt="imagen.png" src="imagen%2018.png" /></p>
+<p><img alt="imagen.png" src="imagen%2019.png" /></p>
+<p><img alt="imagen.png" src="imagen%2020.png" /></p>
+        </div>
+    </body>
+</html>

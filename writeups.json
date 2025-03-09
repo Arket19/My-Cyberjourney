@@ -1,5 +1,14 @@
 [
     {
+        "title": "HTB: Delivery",
+        "url": "writeups/Delivery/Delivery.html",
+        "tags": [
+            "HTB",
+            "Linux"
+        ],
+        "date": "09/03/2025"
+    },
+    {
         "title": "HTB: Ready",
         "url": "writeups/Ready/Ready.html",
         "tags": [
