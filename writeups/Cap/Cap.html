@@ -1,0 +1,73 @@
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Cap - My Cyberjourney</title>
+        <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="Cap.css" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Alumni+Sans+Pinstripe:ital@0;1&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Roboto+Serif:ital,opsz,wght@0,8..144,100..900;1,8..144,100..900&display=swap" rel="stylesheet">
+    </head>
+    <body>
+        <!-- Menú -->
+        <nav class="w3-bar">
+            <div class="logo">
+                <p>My Cyberjourney</p>
+            </div>
+            <div class="w3-bar-item w3-right w3-hide-large w3-hover-opacity" onclick="w3_open()">
+                <i class="fa fa-bars w3-xlarge"></i>
+            </div>
+            <div class="w3-hide-small">
+                <ul class="elementos-menu">
+                    <li class="w3-bar-item"><a href="../../index.html">Home</a></li>
+                    <li class="w3-bar-item"><a href="../../writeups.html">Writeups</a></li>
+                    <li class="w3-bar-item"><a href="../../learning.html">Learning Journey</a></li>
+                </ul>
+            </div>
+        </nav> 
+        <div class="content">
+            <h1 class="title">EASY - CAP</h1>
+<h1><strong>1. Recon</strong></h1>
+<h2>Nmap</h2>
+<p><code>nmap</code> finds three open ports: FTP (21), SSH (22) and HTTP (80).</p>
+<p><img alt="imagen.png" src="imagen.png" /></p>
+<p>The NSE (Nmap Scripting Engine) finds the following information:</p>
+<ul>
+<li>The box is using Ubuntu.</li>
+<li>The version of the FTP service is vsftpd 3.0.3</li>
+<li>The version of the SSH service is OpenSSH 8.2p1</li>
+<li>The HTTP server is using Gunicorn</li>
+<li>The title of the website suggests it is a Security Dashboard</li>
+</ul>
+<p><img alt="imagen.png" src="imagen%201.png" /></p>
+<hr />
+<h2>Website - TCP 80</h2>
+<p>Accessing the website I see a security dashboard. The menu has three options. Two of them display the output of <code>ifconfig</code> (IP Config) and <code>netstat</code> (Network Status), and the other one redirects to <code>/data/5</code>. This page has some information about packets and a button which downloads an empty <code>.cap</code> file. Changing the number of <code>/data/5</code> I find that different <code>.cap</code> files can be downloaded.</p>
+<p><img alt="imagen.png" src="imagen%202.png" /></p>
+<p><img alt="imagen.png" src="imagen%203.png" /></p>
+<p><img alt="imagen.png" src="imagen%204.png" /></p>
+<p><img alt="imagen.png" src="imagen%205.png" /></p>
+<p>I run <code>gobuster</code> to find hidden files and directories but I do not find anything else than what I had already seen. However, I run it again to find existing pages with <code>.cap</code> files inside of <code>/data</code>. </p>
+<p><img alt="imagen.png" src="imagen%206.png" /></p>
+<p><img alt="imagen.png" src="imagen%207.png" /></p>
+<hr />
+<h1><strong>2. Gaining Access</strong></h1>
+<p>The <code>.cap</code> file downloaded from <code>/data/0</code> contains a user and a password (<code>nathan:Buck3tH4TF0RM3!</code>) for the FTP service. I use them to log in and find out that I can explore the whole target system file, but this does not allow me to execute commands in the target yet.</p>
+<p><img alt="imagen.png" src="imagen%208.png" /></p>
+<p><img alt="imagen.png" src="imagen%209.png" /></p>
+<p><img alt="imagen.png" src="imagen%2010.png" /></p>
+<p>After some minutes checking the contents of the FTP server, I try using those credentials to log in through SSH and it works, granting me access to the system.</p>
+<p><img alt="imagen.png" src="imagen%2011.png" /></p>
+<hr />
+<h1><strong>3. Privilege Escalation</strong></h1>
+<h2>Root</h2>
+<p>Trying to enumerate the system I do not find any SUID binaries, passwords, sudo permissions, or anything that could potentially lead to privilege escalation. So, after the manual enumeration I run <code>linPeas</code> and I find that <code>python3.8</code> has the <code>cap_setuid</code>capability, so using <code>os.setuid(0)</code> I change my UID to <code>root</code> (0) and spawn a shell with root permissions. Now I can grab the flag and submit it.</p>
+<p><img alt="imagen.png" src="imagen%2012.png" /></p>
+<p><img alt="imagen.png" src="imagen%2013.png" /></p>
+        </div>
+    </body>
+</html>

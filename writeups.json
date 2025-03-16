@@ -1,5 +1,28 @@
 [
     {
+        "title": "HTB: Cap",
+        "url": "writeups/Cap/Cap.html",
+        "tags": [
+            "HTB",
+            "Linux",
+            "Capabilities",
+            "Wireshark"
+        ],
+        "date": "16/03/2025"
+    },
+    {
+        "title": "HTB: Ophiuchi",
+        "url": "writeups/Ophiuchi/Ophiuchi.html",
+        "tags": [
+            "HTB",
+            "Linux",
+            "SnakeYAML",
+            "Wasm",
+            "Go"
+        ],
+        "date": "16/03/2025"
+    },
+    {
         "title": "HTB: Delivery",
         "url": "writeups/Delivery/Delivery.html",
         "tags": [
