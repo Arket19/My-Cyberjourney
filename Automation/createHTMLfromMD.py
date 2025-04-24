@@ -36,7 +36,6 @@ def generate_html(md_content, title):
                 <ul class="elementos-menu">
                     <li class="w3-bar-item"><a href="../../index.html">Home</a></li>
                     <li class="w3-bar-item"><a href="../../writeups.html">Writeups</a></li>
-                    <li class="w3-bar-item"><a href="../../learning.html">Learning Journey</a></li>
                 </ul>
             </div>
         </nav> 
